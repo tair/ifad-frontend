@@ -3,6 +3,7 @@ import { AppBar, Toolbar, Typography, makeStyles, Theme } from "@material-ui/cor
 import { ResponsiveContainer, PieChart, Pie, Text, Label, XAxis, Cell } from "recharts";
 import { withPieChartData, AnnotationCategory } from "./store";
 import { AspectPie } from "./pie";
+import { useLocation, useHistory } from "react-router-dom";
 
 const withStyles = makeStyles((theme: Theme) => ({
     chartContainer: {
@@ -24,7 +25,9 @@ const withStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
+}
 
 export const WGS = () => {
     const {
@@ -32,7 +35,20 @@ export const WGS = () => {
     } = withPieChartData();
     const styles = withStyles({});
 
-    const [selectedCategories, setSelectedCategories] = React.useState({BP:[],CC:[],MF:[]});
+    const query = useQuery();
+    const history = useHistory();
+
+    const [selectedCategories, setSelectedCategories] = React.useState({ BP: query.getAll("BP") as AnnotationCategory[], CC: query.getAll("CC") as AnnotationCategory[], MF: query.getAll("MF") as AnnotationCategory[]});
+
+    React.useEffect(() => {
+        let params = new URLSearchParams();
+        Object.entries(selectedCategories).forEach(([aspect, cats]) => {
+            for(const cat of cats){
+                params.append(aspect, cat);
+            }
+        })
+        history.push({search: `?${params}`})
+    }, [selectedCategories])
 
     return (
         <>
@@ -44,9 +60,9 @@ export const WGS = () => {
             <Toolbar />
             <div className={styles.container}>
                 <div className={styles.chartContainer}>
-                    <AspectPie data={MF} label="Molecular Function" onActiveChange={(actives) => setSelectedCategories(cats => ({...cats,MF:actives}))} activeCategories={selectedCategories.MF} />
-                    <AspectPie data={BP} label="Biological Process" onActiveChange={(actives) => setSelectedCategories(cats => ({...cats,BP:actives}))} activeCategories={selectedCategories.BP} />
-                    <AspectPie data={CC} label="Cellular Component" onActiveChange={(actives) => setSelectedCategories(cats => ({...cats,CC:actives}))} activeCategories={selectedCategories.CC} />
+                    <AspectPie data={MF} label="Molecular Function" onActiveChange={(actives) => setSelectedCategories(cats => ({ ...cats, MF: actives }))} activeCategories={selectedCategories.MF} />
+                    <AspectPie data={BP} label="Biological Process" onActiveChange={(actives) => setSelectedCategories(cats => ({ ...cats, BP: actives }))} activeCategories={selectedCategories.BP} />
+                    <AspectPie data={CC} label="Cellular Component" onActiveChange={(actives) => setSelectedCategories(cats => ({ ...cats, CC: actives }))} activeCategories={selectedCategories.CC} />
                 </div>
                 <div className={styles.mainContainer}>
                     <div>{JSON.stringify(selectedCategories)}</div>
