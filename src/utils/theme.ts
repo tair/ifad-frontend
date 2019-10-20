@@ -1,5 +1,6 @@
 import { red, grey } from '@material-ui/core/colors';
 import { createMuiTheme } from '@material-ui/core/styles';
+import { AnnotationCategory } from '../components/WGS/store';
 
 // A custom theme for this app
 const theme = createMuiTheme({
@@ -20,3 +21,10 @@ const theme = createMuiTheme({
 });
 
 export default theme;
+
+export const COLORS: {[key in AnnotationCategory]: string} = {
+    'EXP': '#0088FE',
+    'Other': '#00C49F',
+    'Unannotated': '#FFBB28',
+    'Unknown': '#FF8042'
+};
