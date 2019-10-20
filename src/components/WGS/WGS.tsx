@@ -32,6 +32,8 @@ export const WGS = () => {
     } = withPieChartData();
     const styles = withStyles({});
 
+    const [selectedCategories, setSelectedCategories] = React.useState({BP:[],CC:[],MF:[]});
+
     return (
         <>
             <AppBar color="primary" position="absolute">
@@ -42,12 +44,12 @@ export const WGS = () => {
             <Toolbar />
             <div className={styles.container}>
                 <div className={styles.chartContainer}>
-                    <AspectPie data={MF} label="Molecular Function"/>
-                    <AspectPie data={BP} label="Biological Process"/>
-                    <AspectPie data={CC} label="Cellular Component"/>
+                    <AspectPie data={MF} label="Molecular Function" onActiveChange={(actives) => setSelectedCategories(cats => ({...cats,MF:actives}))} activeCategories={selectedCategories.MF} />
+                    <AspectPie data={BP} label="Biological Process" onActiveChange={(actives) => setSelectedCategories(cats => ({...cats,BP:actives}))} activeCategories={selectedCategories.BP} />
+                    <AspectPie data={CC} label="Cellular Component" onActiveChange={(actives) => setSelectedCategories(cats => ({...cats,CC:actives}))} activeCategories={selectedCategories.CC} />
                 </div>
                 <div className={styles.mainContainer}>
-                    <div>Hello world</div>
+                    <div>{JSON.stringify(selectedCategories)}</div>
                 </div>
             </div>
         </>

@@ -1,4 +1,4 @@
-import { IPieChartSlice } from "./store";
+import { IPieChartSlice, AnnotationCategory } from "./store";
 import { makeStyles } from "@material-ui/styles";
 import { Theme } from "@material-ui/core";
 import React from "react";
@@ -14,10 +14,11 @@ const withStyles = makeStyles((theme: Theme) => ({
 export interface IAspectPieProps {
     data: IPieChartSlice[];
     label: string;
-    onActiveChange?: (actives: string[]) => void;
+    onActiveChange: (actives: AnnotationCategory[]) => void;
+    activeCategories: AnnotationCategory[]
 }
 
-function toggleElementInArray(el: number, arr: number[]){
+function toggleElementInArray<T>(el: T, arr: Array<T>){
     if(arr.indexOf(el)>=0){
         return arr.filter(e => e !== el)
     } else {
@@ -25,16 +26,16 @@ function toggleElementInArray(el: number, arr: number[]){
     }
 }
 
-export const AspectPie = ({ data, label, onActiveChange }: IAspectPieProps) => {
+export const AspectPie = ({ data, label, onActiveChange, activeCategories }: IAspectPieProps) => {
     const styles = withStyles({});
 
-    const [activeIndexes, setActiveIndexes] = React.useState([]);
+    const toggleCategory = (cat: AnnotationCategory) => {
+        onActiveChange(toggleElementInArray(cat, activeCategories))
+    }
 
-    React.useEffect(() => {
-        if(onActiveChange){
-            onActiveChange(activeIndexes.map(idx => data[idx].name))
-        }
-    }, [activeIndexes])
+    const toggleIndex = (idx: number) => {
+        toggleCategory(data[idx].name);
+    }
 
     const renderCustomizedLabel = ({
         cx, cy, midAngle, innerRadius, outerRadius, percent, index,
@@ -45,7 +46,7 @@ export const AspectPie = ({ data, label, onActiveChange }: IAspectPieProps) => {
         const y = parseFloat('' + cy) + radius * Math.sin(-midAngle * RADIAN);
 
         return (
-            <text onClick={()=>setActiveIndexes(idxs=>toggleElementInArray(index, idxs))} style={{userSelect:"none"}} x={x} y={y} fill="white" fontWeight={activeIndexes.indexOf(index)>=0 ? "bolder" : "normal"} textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+            <text onClick={()=>toggleIndex(index)} style={{userSelect:"none"}} x={x} y={y} fill="white" fontWeight={activeCategories.indexOf(data[index].name)>=0 ? "bolder" : "normal"} textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
                 {`${(percent * 100).toFixed(0)}%`}
             </text>
         );
@@ -83,17 +84,17 @@ export const AspectPie = ({ data, label, onActiveChange }: IAspectPieProps) => {
         );
     };
 
-    const legendFormatter = (value: string) => {
-        return <span style={{userSelect:"none", fontWeight: activeIndexes.indexOf(data.indexOf(data.find(d=>d.name==value)))>=0 ? "bolder" : "normal"}}>{value}</span>
+    const legendFormatter = (value: AnnotationCategory) => {
+        return <span style={{userSelect:"none", fontWeight: activeCategories.indexOf(value)>=0 ? "bolder" : "normal"}}>{value}</span>
     }
 
     return (
-        <div key={`pie-${label}-${activeIndexes.length}`} style={{ width: "100%" }}>
+        <div style={{ width: "100%" }}>
             <h3 className={styles.header}>{label}</h3>
             <ResponsiveContainer width={"100%"} height={250}>
                 <PieChart width={200} height={200}>
-                    <Pie isAnimationActive={false} activeIndex={activeIndexes} activeShape={renderActiveShape} data={data} labelLine={false} dataKey="value" nameKey="name" cx="50%" cy="50%" label={renderCustomizedLabel}>
-                        {data.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[entry.name]} onClick={()=>setActiveIndexes(idxs=>toggleElementInArray(index, idxs))} />)}
+                    <Pie isAnimationActive={false} activeIndex={activeCategories.map(cat => data.indexOf(data.find(datum=>datum.name===cat)))} activeShape={renderActiveShape} data={data} labelLine={false} dataKey="value" nameKey="name" cx="50%" cy="50%" label={renderCustomizedLabel}>
+                        {data.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[entry.name]} onClick={()=>toggleIndex(index)} />)}
                     </Pie>
                     <Legend formatter={legendFormatter} />
                 </PieChart>
