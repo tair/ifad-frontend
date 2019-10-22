@@ -1,9 +1,27 @@
-import React from "react";
-import { AppBar, Toolbar, Typography, makeStyles, Theme } from "@material-ui/core";
-import { ResponsiveContainer, PieChart, Pie, Text, Label, XAxis, Cell } from "recharts";
+import React, { useContext } from "react";
+import { AppBar, Toolbar, Typography, makeStyles, Theme, Paper, Tabs, Tab } from "@material-ui/core";
 import { withPieChartData, AnnotationCategory } from "./store";
 import { AspectPie } from "./pie";
-import { useLocation, useHistory } from "react-router-dom";
+import { useLocation, useHistory, Link } from "react-router-dom";
+import { __RouterContext as RouteContext, useRouteMatch } from "react-router";
+
+const TabPanel = (props: { children: JSX.Element | JSX.Element[], index: any, value: any }) => {
+    const { children, value, index, ...other } = props;
+
+    return (
+        <Typography
+            component="div"
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            {...other}
+        >
+            {children}
+        </Typography>
+    );
+}
+
 
 const withStyles = makeStyles((theme: Theme) => ({
     chartContainer: {
@@ -13,12 +31,13 @@ const withStyles = makeStyles((theme: Theme) => ({
         marginTop: theme.spacing(2)
     },
     mainContainer: {
-        flexGrow: 3
+        flexGrow: 10
     },
     container: {
         display: "flex",
         flexDirection: "column",
-        height: "100%"
+        height: "100%",
+        padding: theme.spacing(5)
     },
     header: {
         textAlign: "center"
@@ -38,17 +57,27 @@ export const WGS = () => {
     const query = useQuery();
     const history = useHistory();
 
-    const [selectedCategories, setSelectedCategories] = React.useState({ BP: query.getAll("BP") as AnnotationCategory[], CC: query.getAll("CC") as AnnotationCategory[], MF: query.getAll("MF") as AnnotationCategory[]});
+    const calculateSelected = () => ({ BP: query.getAll("BP") as AnnotationCategory[], CC: query.getAll("CC") as AnnotationCategory[], MF: query.getAll("MF") as AnnotationCategory[] });
+    const selectedCategories = React.useMemo(calculateSelected, [query]);
 
-    React.useEffect(() => {
+    const setSelectedCategories = (sel: typeof selectedCategories) => {
         let params = new URLSearchParams();
-        Object.entries(selectedCategories).forEach(([aspect, cats]) => {
-            for(const cat of cats){
+        Object.entries(sel).forEach(([aspect, cats]) => {
+            for (const cat of cats) {
                 params.append(aspect, cat);
             }
         })
-        history.push({search: `?${params}`})
-    }, [selectedCategories])
+        history.push({ search: `?${params}` })
+    };
+
+    const match_path = React.useContext(RouteContext).match.path;
+    console.log(match_path);
+
+    const sub_match = useRouteMatch<{ route: string }>(`${match_path}/:route`);
+
+    // React.useEffect(() => {
+    //     setSelectedCategories(calculateSelected())
+    // }, [query])
 
     return (
         <>
@@ -60,12 +89,21 @@ export const WGS = () => {
             <Toolbar />
             <div className={styles.container}>
                 <div className={styles.chartContainer}>
-                    <AspectPie data={MF} label="Molecular Function" onActiveChange={(actives) => setSelectedCategories(cats => ({ ...cats, MF: actives }))} activeCategories={selectedCategories.MF} />
-                    <AspectPie data={BP} label="Biological Process" onActiveChange={(actives) => setSelectedCategories(cats => ({ ...cats, BP: actives }))} activeCategories={selectedCategories.BP} />
-                    <AspectPie data={CC} label="Cellular Component" onActiveChange={(actives) => setSelectedCategories(cats => ({ ...cats, CC: actives }))} activeCategories={selectedCategories.CC} />
+                    <AspectPie data={MF} label="Molecular Function" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, MF: actives }))} activeCategories={selectedCategories.MF} />
+                    <AspectPie data={BP} label="Biological Process" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, BP: actives }))} activeCategories={selectedCategories.BP} />
+                    <AspectPie data={CC} label="Cellular Component" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, CC: actives }))} activeCategories={selectedCategories.CC} />
                 </div>
                 <div className={styles.mainContainer}>
-                    <div>{JSON.stringify(selectedCategories)}</div>
+                        <Tabs value={sub_match.params.route}>
+                            <Tab component={Link} to={"genes"} value={"genes"} label="Gene IDs" />
+                            <Tab component={Link} to={"annotations"} value={"annotations"} label="Annotations" />
+                        </Tabs>
+                        <TabPanel value={"genes"} index={sub_match.params.route}>
+                            <Typography>Genes!</Typography>
+                        </TabPanel>
+                        <TabPanel value={"annotations"} index={sub_match.params.route}>
+                            <Typography>Annotations!</Typography>
+                        </TabPanel>
                 </div>
             </div>
         </>
