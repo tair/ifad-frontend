@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Theme } from '@material-ui/core';
-import { useRouteMatch, Route } from 'react-router-dom';
+import { useRouteMatch, Route, Redirect, Switch } from 'react-router-dom';
 import { WGS } from './components/WGS/WGS';
 
 const withStyles = makeStyles((_theme: Theme) => ({
@@ -17,7 +17,10 @@ export const App = () => {
 
     return (
         <div className={classes.root}>
-            <Route path={`/snapshot`} component={WGS}/>
+            <Switch>
+                <Route path={`/snapshot`} component={WGS}/>
+                <Redirect exact strict from="/" to="/snapshot/"/>
+            </Switch>
         </div>
     )
 }

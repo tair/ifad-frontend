@@ -38,15 +38,15 @@ export const AspectPie = ({ data, label, onActiveChange, activeCategories }: IAs
     }
 
     const renderCustomizedLabel = ({
-        cx, cy, midAngle, innerRadius, outerRadius, percent, index,
+        cx, cy, midAngle, startAngle, endAngle, innerRadius, outerRadius, percent, index,
     }: PieLabelRenderProps) => {
         const RADIAN = Math.PI / 180;
-        const radius = (parseFloat('' + outerRadius) - parseFloat('' + innerRadius)) * 0.5;
-        const x = parseFloat('' + cx) + radius * Math.cos(-midAngle * RADIAN);
-        const y = parseFloat('' + cy) + radius * Math.sin(-midAngle * RADIAN);
+        const radius = (parseFloat('' + outerRadius) - parseFloat('' + innerRadius)) * 0.6;
+        const x = parseFloat('' + cx) + radius * Math.cos(-(midAngle*1) * RADIAN);
+        const y = parseFloat('' + cy) + radius * Math.sin(-(midAngle*1) * RADIAN);
 
         return (
-            <text onClick={()=>toggleIndex(index)} style={{userSelect:"none"}} x={x} y={y} fill="white" fontWeight={activeCategories.indexOf(data[index].name)>=0 ? "bolder" : "normal"} textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+            <text onClick={()=>toggleIndex(index)} style={{userSelect:"none"}} x={x} y={y} fill="white" fontWeight={activeCategories.indexOf(data[index].name)>=0 ? "bolder" : "normal"} textAnchor="middle" dominantBaseline="central">
                 {`${(percent * 100).toFixed(0)}%`}
             </text>
         );

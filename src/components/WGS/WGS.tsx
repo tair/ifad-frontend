@@ -1,9 +1,11 @@
 import React, { useContext } from "react";
 import { AppBar, Toolbar, Typography, makeStyles, Theme, Paper, Tabs, Tab } from "@material-ui/core";
-import { withPieChartData, AnnotationCategory } from "./store";
+import { withPieChartData, AnnotationCategory, IPieChartFilter } from "./store";
 import { AspectPie } from "./pie";
 import { useLocation, useHistory, Link } from "react-router-dom";
-import { __RouterContext as RouteContext, useRouteMatch } from "react-router";
+import { __RouterContext as RouteContext, useRouteMatch, Redirect } from "react-router";
+import { Genes } from "./Genes";
+import { Annotations } from "./Annotations";
 
 const TabPanel = (props: { children: JSX.Element | JSX.Element[], index: any, value: any }) => {
     const { children, value, index, ...other } = props;
@@ -50,15 +52,23 @@ function useQuery() {
 
 export const WGS = () => {
     const {
-        BP, CC, MF
+        B, C, M
     } = withPieChartData();
     const styles = withStyles({});
 
     const query = useQuery();
     const history = useHistory();
 
-    const calculateSelected = () => ({ BP: query.getAll("BP") as AnnotationCategory[], CC: query.getAll("CC") as AnnotationCategory[], MF: query.getAll("MF") as AnnotationCategory[] });
+    const calculateSelected = () => ({ B: query.getAll("B") as AnnotationCategory[], C: query.getAll("C") as AnnotationCategory[], M: query.getAll("M") as AnnotationCategory[] });
     const selectedCategories = React.useMemo(calculateSelected, [query]);
+    const filters: Array<IPieChartFilter> = React.useMemo(
+        (
+            () => Object.entries(selectedCategories)
+                        .map(([aspect, categories]: [keyof typeof selectedCategories, AnnotationCategory[]]) => categories.map(category => ({aspect, category})))
+                        .reduce((accum,curr) => ([...accum,...curr]), [])
+        ),
+        [selectedCategories]
+    );
 
     const setSelectedCategories = (sel: typeof selectedCategories) => {
         let params = new URLSearchParams();
@@ -71,13 +81,8 @@ export const WGS = () => {
     };
 
     const match_path = React.useContext(RouteContext).match.path;
-    console.log(match_path);
 
     const sub_match = useRouteMatch<{ route: string }>(`${match_path}/:route`);
-
-    // React.useEffect(() => {
-    //     setSelectedCategories(calculateSelected())
-    // }, [query])
 
     return (
         <>
@@ -89,21 +94,27 @@ export const WGS = () => {
             <Toolbar />
             <div className={styles.container}>
                 <div className={styles.chartContainer}>
-                    <AspectPie data={MF} label="Molecular Function" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, MF: actives }))} activeCategories={selectedCategories.MF} />
-                    <AspectPie data={BP} label="Biological Process" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, BP: actives }))} activeCategories={selectedCategories.BP} />
-                    <AspectPie data={CC} label="Cellular Component" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, CC: actives }))} activeCategories={selectedCategories.CC} />
+                    <AspectPie data={M} label="Molecular Function" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, M: actives }))} activeCategories={selectedCategories.M} />
+                    <AspectPie data={B} label="Biological Process" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, B: actives }))} activeCategories={selectedCategories.B} />
+                    <AspectPie data={C} label="Cellular Component" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, C: actives }))} activeCategories={selectedCategories.C} />
                 </div>
                 <div className={styles.mainContainer}>
-                        <Tabs value={sub_match.params.route}>
-                            <Tab component={Link} to={"genes"} value={"genes"} label="Gene IDs" />
-                            <Tab component={Link} to={"annotations"} value={"annotations"} label="Annotations" />
-                        </Tabs>
-                        <TabPanel value={"genes"} index={sub_match.params.route}>
-                            <Typography>Genes!</Typography>
-                        </TabPanel>
-                        <TabPanel value={"annotations"} index={sub_match.params.route}>
-                            <Typography>Annotations!</Typography>
-                        </TabPanel>
+                    {
+                        sub_match ? (
+                            <>
+                                <Tabs value={sub_match.params.route}>
+                                    <Tab component={Link} to={"genes"} value={"genes"} label="Gene IDs" />
+                                    <Tab component={Link} to={"annotations"} value={"annotations"} label="Annotations" />
+                                </Tabs>
+                                <TabPanel value={"genes"} index={sub_match.params.route}>
+                                    <Genes filters={filters}/> 
+                                </TabPanel>
+                                <TabPanel value={"annotations"} index={sub_match.params.route}>
+                                    <Annotations filters={filters}/> 
+                                </TabPanel>
+                            </>
+                        ) : <Redirect to={`${match_path}/genes`} />
+                    }
                 </div>
             </div>
         </>
