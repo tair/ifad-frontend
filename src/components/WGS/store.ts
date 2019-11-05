@@ -1,3 +1,5 @@
+import React from "react";
+
 export type Aspect = 'M' | 'B' | 'C';
 export type AnnotationCategory = 'EXP' | 'Other' | 'Unknown' | 'Unannotated'
 export type FilterMode = 'union' | 'intersection';
@@ -17,24 +19,15 @@ export type IPieChartData = {
 }
 
 export const withPieChartData = (filters: IPieChartFilter[] = [], mode: FilterMode = 'union'): IPieChartData => { 
-    return {
-        'B': [
-            {name: 'EXP', value: 0.2},
-            {name: 'Other', value: 0.2},
-            {name: 'Unknown', value: 0.2},
-            {name: 'Unannotated', value: 0.2}
-        ],
-        'C': [
-            {name: 'EXP', value: 0.2},
-            {name: 'Other', value: 0.3},
-            {name: 'Unknown', value: 0.2},
-            {name: 'Unannotated', value: 0.3}
-        ],
-        'M': [
-            {name: 'EXP', value: 0.2},
-            {name: 'Other', value: 0.3},
-            {name: 'Unknown', value: 0.2},
-            {name: 'Unannotated', value: 0.3}
-        ]
-    };
+    const [data, setData] = React.useState<IPieChartData>({B:[],C:[],M:[]});
+    
+    React.useEffect(() => {
+        (async () => {
+            const result = await fetch(`http://localhost:3000/wgs_segments`);
+            const jsonified = await result.json();
+            setData(jsonified);
+        })();
+    }, []);
+
+    return data;
 }
