@@ -24,7 +24,7 @@ export default theme;
 
 export const COLORS: {[key in AnnotationCategory]: string} = {
     'EXP': '#0088FE',
-    'Other': '#00C49F',
-    'Unannotated': '#FFBB28',
-    'Unknown': '#FF8042'
+    'OTHER': '#00C49F',
+    'UNKNOWN': '#FFBB28',
+    'UNANNOTATED': '#FF8042'
 };

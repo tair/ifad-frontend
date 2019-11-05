@@ -52,14 +52,14 @@ function useQuery() {
 
 export const WGS = () => {
     const {
-        B, C, M
+        P,F,C
     } = withPieChartData();
     const styles = withStyles({});
 
     const query = useQuery();
     const history = useHistory();
 
-    const calculateSelected = () => ({ B: query.getAll("B") as AnnotationCategory[], C: query.getAll("C") as AnnotationCategory[], M: query.getAll("M") as AnnotationCategory[] });
+    const calculateSelected = () => ({ P: query.getAll("P") as AnnotationCategory[], F: query.getAll("F") as AnnotationCategory[], C: query.getAll("C") as AnnotationCategory[] });
     const selectedCategories = React.useMemo(calculateSelected, [query]);
     const filters: Array<IPieChartFilter> = React.useMemo(
         (
@@ -84,6 +84,8 @@ export const WGS = () => {
 
     const sub_match = useRouteMatch<{ route: string }>(`${match_path}/:route`);
 
+    const filter = filters.map(f => `${f.aspect},${f.category}`).join("&");
+
     return (
         <>
             <AppBar color="primary" position="absolute">
@@ -94,10 +96,11 @@ export const WGS = () => {
             <Toolbar />
             <div className={styles.container}>
                 <div className={styles.chartContainer}>
-                    <AspectPie data={M} label="Molecular Function" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, M: actives }))} activeCategories={selectedCategories.M} />
-                    <AspectPie data={B} label="Biological Process" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, B: actives }))} activeCategories={selectedCategories.B} />
+                    <AspectPie data={F} label="Molecular Function" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, F: actives }))} activeCategories={selectedCategories.F} />
+                    <AspectPie data={P} label="Biological Process" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, P: actives }))} activeCategories={selectedCategories.P} />
                     <AspectPie data={C} label="Cellular Component" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, C: actives }))} activeCategories={selectedCategories.C} />
                 </div>
+                <Typography variant="h4">Filter: {filter}</Typography>
                 <div className={styles.mainContainer}>
                     {
                         sub_match ? (

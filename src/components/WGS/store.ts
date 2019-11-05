@@ -1,7 +1,7 @@
 import React from "react";
 
-export type Aspect = 'M' | 'B' | 'C';
-export type AnnotationCategory = 'EXP' | 'Other' | 'Unknown' | 'Unannotated'
+export type Aspect = 'P' | 'F' | 'C';
+export type AnnotationCategory = 'EXP' | 'OTHER' | 'UNKNOWN' | 'UNANNOTATED'
 export type FilterMode = 'union' | 'intersection';
 
 export interface IPieChartFilter {
@@ -19,11 +19,11 @@ export type IPieChartData = {
 }
 
 export const withPieChartData = (filters: IPieChartFilter[] = [], mode: FilterMode = 'union'): IPieChartData => { 
-    const [data, setData] = React.useState<IPieChartData>({B:[],C:[],M:[]});
+    const [data, setData] = React.useState<IPieChartData>({P:[],F:[],C:[]});
     
     React.useEffect(() => {
         (async () => {
-            const result = await fetch(`http://localhost:3000/wgs_segments`);
+            const result = await fetch(`http://localhost:3000/api/v1/wgs_segments`);
             const jsonified = await result.json();
             setData(jsonified);
         })();
