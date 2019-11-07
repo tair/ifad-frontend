@@ -1,6 +1,6 @@
 import React from "react";
-import { IPieChartFilter } from "./store";
+import { IPieChartFilter, FilterMode } from "./store";
 
-export const Annotations = ({filters}: {filters: IPieChartFilter[]}) => {
+export const Annotations = ({filters, operator}: {filters: IPieChartFilter[], operator: FilterMode}) => {
     return <div>Hello</div>
 }

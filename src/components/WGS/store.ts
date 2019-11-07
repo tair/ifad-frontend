@@ -31,3 +31,27 @@ export const withPieChartData = (filters: IPieChartFilter[] = [], mode: FilterMo
 
     return data;
 }
+
+type GeneList = Array<{GeneID: string, GeneProductType: string}>;
+export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'union'): [boolean, GeneList] => {
+    const [genes, setGenes] = React.useState<GeneList>([]);
+    const [loading, setLoading] = React.useState(true);
+
+    const queryParams = new URLSearchParams({
+        operator: mode
+    });
+
+    filters.map(f => `${f.aspect},${f.category}`).forEach(filter => queryParams.append('filter[]', filter));
+
+    React.useEffect(() => {
+        (async () => {
+            setLoading(true);
+            const result = await fetch(`http://localhost:3000/api/v1/genes?${queryParams}`);
+            const jsonified = await result.json();
+            setGenes(jsonified.annotatedGenes);
+            setLoading(false);
+        })();
+    }, [filters, mode]);
+
+    return [loading, genes]; 
+}

@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
-import { AppBar, Toolbar, Typography, makeStyles, Theme, Paper, Tabs, Tab } from "@material-ui/core";
-import { withPieChartData, AnnotationCategory, IPieChartFilter } from "./store";
+import { AppBar, Toolbar, Typography, makeStyles, Theme, Paper, Tabs, Tab, Switch, FormControlLabel } from "@material-ui/core";
+import { withPieChartData, AnnotationCategory, IPieChartFilter, FilterMode } from "./store";
 import { AspectPie } from "./pie";
 import { useLocation, useHistory, Link } from "react-router-dom";
 import { __RouterContext as RouteContext, useRouteMatch, Redirect } from "react-router";
@@ -50,6 +50,24 @@ function useQuery() {
     return new URLSearchParams(useLocation().search);
 }
 
+const aspectHR = {
+    'F': "Molecular Function",
+    'P': "Biological Process",
+    'C': "Celluar Component"
+};
+
+const statusHR = {
+    'EXP': "Experimentally Known",
+    'OTHER': "Known Other",
+    'UNKNOWN': "Annotated Unknown",
+    'UNANNOTATED': "Unannotated"
+}
+
+const operatorHR = {
+    'intersection': "And",
+    'union': "Or",
+}
+
 export const WGS = () => {
     const {
         P,F,C
@@ -59,6 +77,7 @@ export const WGS = () => {
     const query = useQuery();
     const history = useHistory();
 
+    const operator = React.useMemo<FilterMode>((() => query.get("operator") as FilterMode || 'union'), [query]);
     const calculateSelected = () => ({ P: query.getAll("P") as AnnotationCategory[], F: query.getAll("F") as AnnotationCategory[], C: query.getAll("C") as AnnotationCategory[] });
     const selectedCategories = React.useMemo(calculateSelected, [query]);
     const filters: Array<IPieChartFilter> = React.useMemo(
@@ -80,6 +99,11 @@ export const WGS = () => {
         history.push({ search: `?${params}` })
     };
 
+    const setOperator = (op: FilterMode) => {
+        query.set("operator", op);
+        history.push({search: `?${query}`});
+    }
+
     const match_path = React.useContext(RouteContext).match.path;
 
     const sub_match = useRouteMatch<{ route: string }>(`${match_path}/:route`);
@@ -100,7 +124,13 @@ export const WGS = () => {
                     <AspectPie data={P} label="Biological Process" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, P: actives }))} activeCategories={selectedCategories.P} />
                     <AspectPie data={C} label="Cellular Component" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, C: actives }))} activeCategories={selectedCategories.C} />
                 </div>
-                <Typography variant="h4">Filter: {filter}</Typography>
+                <Typography variant="h6">Filter: {filters.map(f => `${aspectHR[f.aspect]} - ${statusHR[f.category]}`).join(` ${operatorHR[operator]} `)}</Typography>
+                <FormControlLabel
+                    value="end"
+                    control={<Switch onChange={() => setOperator(operator === 'union' ? 'intersection' : 'union')} checked={operator==='union'} />}
+                    label={operator==='union' ? 'Any' : 'All'}
+                    labelPlacement="end"
+                />
                 <div className={styles.mainContainer}>
                     {
                         sub_match ? (
@@ -110,10 +140,10 @@ export const WGS = () => {
                                     <Tab component={Link} to={"annotations"} value={"annotations"} label="Annotations" />
                                 </Tabs>
                                 <TabPanel value={"genes"} index={sub_match.params.route}>
-                                    <Genes filters={filters}/> 
+                                    <Genes filters={filters} operator={operator}/> 
                                 </TabPanel>
                                 <TabPanel value={"annotations"} index={sub_match.params.route}>
-                                    <Annotations filters={filters}/> 
+                                    <Annotations filters={filters} operator={operator}/> 
                                 </TabPanel>
                             </>
                         ) : <Redirect to={`${match_path}/genes`} />
