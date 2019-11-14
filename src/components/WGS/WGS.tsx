@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { AppBar, Toolbar, Typography, makeStyles, Theme, Paper, Tabs, Tab, Switch, FormControlLabel } from "@material-ui/core";
+import React from "react";
+import { AppBar, Toolbar, Typography, makeStyles, Theme, Tabs, Tab, Switch, FormControlLabel } from "@material-ui/core";
 import { withPieChartData, AnnotationCategory, IPieChartFilter, FilterMode } from "./store";
 import { AspectPie } from "./pie";
 import { useLocation, useHistory, Link } from "react-router-dom";
@@ -108,7 +108,7 @@ export const WGS = () => {
 
     const sub_match = useRouteMatch<{ route: string }>(`${match_path}/:route`);
 
-    const filter = filters.map(f => `${f.aspect},${f.category}`).join("&");
+    // const filter = filters.map(f => `${f.aspect},${f.category}`).join("&");
 
     return (
         <>
