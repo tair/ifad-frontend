@@ -136,14 +136,14 @@ export const WGS = () => {
                         sub_match ? (
                             <>
                                 <Tabs value={sub_match.params.route}>
-                                    <Tab component={Link} to={"genes"} value={"genes"} label="Gene IDs" />
-                                    <Tab component={Link} to={"annotations"} value={"annotations"} label="Annotations" />
+                                    <Tab component={Link} to={{pathname: "genes", search: ''+query}} value={"genes"} label="Gene IDs" />
+                                    <Tab component={Link} to={{pathname: "annotations", search: ''+query}} value={"annotations"} label="Annotations" />
                                 </Tabs>
-                                <TabPanel value={"genes"} index={sub_match.params.route}>
-                                    <Genes filters={filters} operator={operator}/> 
-                                </TabPanel>
                                 <TabPanel value={"annotations"} index={sub_match.params.route}>
                                     <Annotations filters={filters} operator={operator}/> 
+                                </TabPanel>
+                                <TabPanel value={"genes"} index={sub_match.params.route}>
+                                    <Genes filters={filters} operator={operator}/> 
                                 </TabPanel>
                             </>
                         ) : <Redirect to={`${match_path}/genes`} />

@@ -803,6 +803,13 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
+"@bjornagh/use-fetch@^0.0.12":
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/@bjornagh/use-fetch/-/use-fetch-0.0.12.tgz#305d9b65b8c550f514d4def0be803b78e4d2bb49"
+  integrity sha512-BxVoHE5e7pPmuzgXkbSZRhft1MS8BESL7rb9tuMatZEbK4BIH+H5M8yALkRU2ukRa0uGf7+mf540rUt6iPvbEw==
+  dependencies:
+    fetch-dedupe "^3.0.0"
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.3.tgz#099139eaec7ebf07a27c1786a3ff64f39464d2ef"
@@ -4168,6 +4175,11 @@ fb-watchman@^2.0.0:
   integrity sha1-VOmr99+i8mzZsWNsWIwa/AXeXVg=
   dependencies:
     bser "^2.0.0"
+
+fetch-dedupe@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/fetch-dedupe/-/fetch-dedupe-3.0.0.tgz#3703f4ace2a949d95bf2e28e69da97b27e845d8e"
+  integrity sha512-cZV4fPN8RwYIwjc9z6fqnAojs7w+wvaSYio0N0U11PnlCeVv3BB+1qO2rSXyjltua5kl18AMHvrASN5XyOIGKw==
 
 figgy-pudding@^3.5.1:
   version "3.5.1"
@@ -8393,6 +8405,11 @@ react-error-overlay@^6.0.2:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.0.2.tgz#642bd6157c6a4b6e9ca4a816f7ed30b868c47f81"
   integrity sha512-DHRuRk3K4Lg9obI6J4Y+nKvtwjasYRU9CFL3ud42x9YJG1HbQjSNublapC/WBJOA726gNUbqbj0U2df9+uzspQ==
+
+react-fetch-hook@^1.7.1:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/react-fetch-hook/-/react-fetch-hook-1.7.1.tgz#d15d67ccab4087d461c6aaaf31f4cbcab7bb0f6e"
+  integrity sha512-VbDQKp1vVJoonH9wfgot3ayJdTZ6rAB5TQmqG40DE1SlJJ+UqhjlT+cynn/ofP5j1qYr5QLls87vqI2yuUoqYw==
 
 react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.4, react-is@^16.8.6:
   version "16.9.0"

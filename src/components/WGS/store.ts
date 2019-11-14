@@ -1,4 +1,5 @@
 import React from "react";
+import { useFetch } from "@bjornagh/use-fetch";
 
 export type Aspect = 'P' | 'F' | 'C';
 export type AnnotationCategory = 'EXP' | 'OTHER' | 'UNKNOWN' | 'UNANNOTATED'
@@ -25,7 +26,24 @@ export const withPieChartData = (filters: IPieChartFilter[] = [], mode: FilterMo
         (async () => {
             const result = await fetch(`http://localhost:3000/api/v1/wgs_segments`);
             const jsonified = await result.json();
-            setData(jsonified);
+
+            const newData = Object
+                .entries(jsonified)
+                .reduce((accum, [aspect, info]) => (
+                    {
+                        ...accum, 
+                        [aspect]: Object
+                            .entries(info)
+                            .map(([status,value]) => (
+                                {
+                                    name: status, 
+                                    value
+                                }
+                            ))
+                    }
+                ), {} as IPieChartData);
+
+            setData(newData);
         })();
     }, []);
 
@@ -33,25 +51,41 @@ export const withPieChartData = (filters: IPieChartFilter[] = [], mode: FilterMo
 }
 
 type GeneList = Array<{GeneID: string, GeneProductType: string}>;
-export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'union'): [boolean, GeneList] => {
-    const [genes, setGenes] = React.useState<GeneList>([]);
-    const [loading, setLoading] = React.useState(true);
 
-    const queryParams = new URLSearchParams({
+const geneQueryCache: {[key: string]: {genes: number, annotations: number}} = {};
+const globalLoading = {};
+export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'union'): {loading: boolean, geneCount?: number, annotationCount?: number, triggerGeneDownload?: () => void, triggerAnnotationDownload?: () => void} => {
+        const _queryParams = new URLSearchParams({
         operator: mode
     });
 
-    filters.map(f => `${f.aspect},${f.category}`).forEach(filter => queryParams.append('filter[]', filter));
+    filters.map(f => `${f.aspect},${f.category}`).forEach(filter => _queryParams.append('filter[]', filter));
 
-    React.useEffect(() => {
-        (async () => {
-            setLoading(true);
-            const result = await fetch(`http://localhost:3000/api/v1/genes?${queryParams}`);
-            const jsonified = await result.json();
-            setGenes(jsonified.annotatedGenes);
-            setLoading(false);
-        })();
-    }, [filters, mode]);
+    const queryParams = _queryParams.toString();
 
-    return [loading, genes]; 
+    const { data, fetching } = useFetch<{annotatedGenes: any, unannotatedGenes: any, annotations: any[]}>({url:`http://localhost:3000/api/v1/genes?${queryParams}`});
+
+    let geneCount = 0;
+    let annotationCount = 0;
+
+    if(fetching){
+        return {loading: true};
+    } else {
+        const genes: GeneList = Object.values(data.annotatedGenes).concat(Object.values(data.unannotatedGenes)) as any;
+        geneQueryCache[queryParams] = {genes: genes.length, annotations: data.annotations.length};
+        geneCount = genes.length;
+        annotationCount = data.annotations.length;
+    }
+
+    const triggerGeneDownload = () => {
+        _queryParams.set("asGeneCSV", "true");
+        window.location.href = `http://localhost:3000/api/v1/genes?${_queryParams}`
+    }
+
+    const triggerAnnotationDownload = () => {
+        _queryParams.set("asGAF", "true");
+        window.location.href = `http://localhost:3000/api/v1/genes?${_queryParams}`
+    }
+
+    return {loading: false, geneCount, annotationCount, triggerGeneDownload, triggerAnnotationDownload}; 
 }
