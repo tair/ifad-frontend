@@ -53,7 +53,7 @@ export const withPieChartData = (filters: IPieChartFilter[] = [], mode: FilterMo
 type GeneList = Array<{GeneID: string, GeneProductType: string}>;
 
 const geneQueryCache: {[key: string]: {genes: number, annotations: number}} = {};
-const globalLoading = {};
+// const globalLoading = {};
 export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'union'): {loading: boolean, geneCount?: number, annotationCount?: number, triggerGeneDownload?: () => void, triggerAnnotationDownload?: () => void} => {
         const _queryParams = new URLSearchParams({
         operator: mode

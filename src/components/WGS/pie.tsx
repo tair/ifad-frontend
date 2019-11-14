@@ -2,7 +2,7 @@ import { IPieChartSlice, AnnotationCategory } from "./store";
 import { makeStyles } from "@material-ui/styles";
 import { Theme } from "@material-ui/core";
 import React from "react";
-import { ResponsiveContainer, PieChart, Pie, Cell, Legend, PieLabelRenderProps, Sector, LegendPayload } from "recharts";
+import { ResponsiveContainer, PieChart, Pie, Cell, Legend, PieLabelRenderProps, Sector } from "recharts";
 import { COLORS } from "../../utils/theme";
 
 const withStyles = makeStyles((theme: Theme) => ({
