@@ -24,7 +24,7 @@ export const withPieChartData = (filters: IPieChartFilter[] = [], mode: FilterMo
     
     React.useEffect(() => {
         (async () => {
-            const result = await fetch(`http://localhost:3000/api/v1/wgs_segments`);
+            const result = await fetch(`//${process.env.REACT_APP_API_HOST || ''}/api/v1/wgs_segments`);
             const jsonified = await result.json();
 
             const newData = Object
@@ -63,7 +63,7 @@ export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'u
 
     const queryParams = _queryParams.toString();
 
-    const { data, fetching } = useFetch<{annotatedGenes: any, unannotatedGenes: any, annotations: any[]}>({url:`http://localhost:3000/api/v1/genes?${queryParams}`});
+    const { data, fetching } = useFetch<{annotatedGenes: any, unannotatedGenes: any, annotations: any[]}>({url:`//${process.env.REACT_APP_API_HOST || ''}/api/v1/genes?${queryParams}`});
 
     let geneCount = 0;
     let annotationCount = 0;
@@ -79,12 +79,12 @@ export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'u
 
     const triggerGeneDownload = () => {
         _queryParams.set("asGeneCSV", "true");
-        window.location.href = `http://localhost:3000/api/v1/genes?${_queryParams}`
+        window.location.href = `//${process.env.REACT_APP_API_HOST || ''}/api/v1/genes?${_queryParams}`
     }
 
     const triggerAnnotationDownload = () => {
         _queryParams.set("asGAF", "true");
-        window.location.href = `http://localhost:3000/api/v1/genes?${_queryParams}`
+        window.location.href = `//${process.env.REACT_APP_API_HOST || ''}/api/v1/genes?${_queryParams}`
     }
 
     return {loading: false, geneCount, annotationCount, triggerGeneDownload, triggerAnnotationDownload}; 
