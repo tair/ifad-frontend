@@ -52,7 +52,7 @@ export const withPieChartData = (filters: IPieChartFilter[] = [], mode: FilterMo
 
 type GeneList = Array<{GeneID: string, GeneProductType: string}>;
 
-const backend_host = `//${process.env.REACT_APP_API_HOST || window.location.hostname}`;
+const backend_host = process.env.REACT_APP_API_HOSTNAME || '';
 
 const geneQueryCache: {[key: string]: {genes: number, annotations: number}} = {};
 // const globalLoading = {};
