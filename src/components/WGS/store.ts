@@ -24,7 +24,7 @@ export const withPieChartData = (filters: IPieChartFilter[] = [], mode: FilterMo
     
     React.useEffect(() => {
         (async () => {
-            const result = await fetch(`//${process.env.REACT_APP_API_HOST || ''}/api/v1/wgs_segments`);
+            const result = await fetch(`${backend_host}/api/v1/wgs_segments`);
             const jsonified = await result.json();
 
             const newData = Object
