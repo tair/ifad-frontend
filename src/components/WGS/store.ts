@@ -52,6 +52,8 @@ export const withPieChartData = (filters: IPieChartFilter[] = [], mode: FilterMo
 
 type GeneList = Array<{GeneID: string, GeneProductType: string}>;
 
+const backend_host = `//${process.env.REACT_APP_API_HOST || ''}`;
+
 const geneQueryCache: {[key: string]: {genes: number, annotations: number}} = {};
 // const globalLoading = {};
 export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'union'): {loading: boolean, geneCount?: number, annotationCount?: number, triggerGeneDownload?: () => void, triggerAnnotationDownload?: () => void} => {
@@ -63,7 +65,7 @@ export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'u
 
     const queryParams = _queryParams.toString();
 
-    const { data, fetching } = useFetch<{annotatedGenes: any, unannotatedGenes: any, annotations: any[]}>({url:`//${process.env.REACT_APP_API_HOST || ''}/api/v1/genes?${queryParams}`});
+    const { data, fetching } = useFetch<{annotatedGenes: any, unannotatedGenes: any, annotations: any[]}>({url:`${backend_host}/api/v1/genes?${queryParams}`});
 
     let geneCount = 0;
     let annotationCount = 0;
@@ -79,12 +81,12 @@ export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'u
 
     const triggerGeneDownload = () => {
         _queryParams.set("asGeneCSV", "true");
-        window.location.href = `//${process.env.REACT_APP_API_HOST || ''}/api/v1/genes?${_queryParams}`
+        window.location.href = `${backend_host}/api/v1/genes?${_queryParams}`
     }
 
     const triggerAnnotationDownload = () => {
         _queryParams.set("asGAF", "true");
-        window.location.href = `//${process.env.REACT_APP_API_HOST || ''}/api/v1/genes?${_queryParams}`
+        window.location.href = `${backend_host}/api/v1/genes?${_queryParams}`
     }
 
     return {loading: false, geneCount, annotationCount, triggerGeneDownload, triggerAnnotationDownload}; 
