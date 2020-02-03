@@ -27,19 +27,32 @@ export const withPieChartData = (filters: IPieChartFilter[] = [], mode: FilterMo
             const result = await fetch(`${backend_host}/api/v1/wgs_segments`);
             const jsonified = await result.json();
 
+            console.log(jsonified);
+
             const newData = Object
                 .entries(jsonified)
-                .reduce((accum, [aspect, info]) => (
+                .filter(([key]) => ["P","F","C"].includes(key))
+                .reduce((accum, [aspect, info]: [string, any]) => (
                     {
                         ...accum, 
-                        [aspect]: Object
-                            .entries(info)
-                            .map(([status,value]) => (
-                                {
-                                    name: status, 
-                                    value
-                                }
-                            ))
+                        [aspect]: [
+                            {
+                                name: "EXP",
+                                value: info.known.exp,
+                            },
+                            {
+                                name: "OTHER",
+                                value: info.known.other,
+                            },
+                            {
+                                name: "UNKNOWN",
+                                value: info.unknown,
+                            },
+                            {
+                                name: "UNANNOTATED",
+                                value: info.unannotated
+                            }
+                        ]
                     }
                 ), {} as IPieChartData);
 
@@ -58,10 +71,10 @@ const geneQueryCache: {[key: string]: {genes: number, annotations: number}} = {}
 // const globalLoading = {};
 export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'union'): {loading: boolean, geneCount?: number, annotationCount?: number, triggerGeneDownload?: () => void, triggerAnnotationDownload?: () => void} => {
         const _queryParams = new URLSearchParams({
-        operator: mode
+        strategy: mode
     });
 
-    filters.map(f => `${f.aspect},${f.category}`).forEach(filter => _queryParams.append('filter[]', filter));
+    filters.map(f => `${f.aspect.toUpperCase()},${f.category.toUpperCase()}`).forEach(filter => _queryParams.append('filter[]', filter));
 
     const queryParams = _queryParams.toString();
 
@@ -80,12 +93,12 @@ export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'u
     }
 
     const triggerGeneDownload = () => {
-        _queryParams.set("asGeneCSV", "true");
+        _queryParams.set("format", "gene-csv");
         window.location.href = `${backend_host}/api/v1/genes?${_queryParams}`
     }
 
     const triggerAnnotationDownload = () => {
-        _queryParams.set("asGAF", "true");
+        _queryParams.set("format", "gaf");
         window.location.href = `${backend_host}/api/v1/genes?${_queryParams}`
     }
 

@@ -13,7 +13,7 @@
                 "start"
             ],
             "console": "integratedTerminal",
-            "port": 9229
+            "port": 9229,
         }
     ]
 }
