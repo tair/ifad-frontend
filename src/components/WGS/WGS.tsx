@@ -96,6 +96,7 @@ export const WGS = () => {
                 params.append(aspect, cat);
             }
         })
+        params.set("operator", operator);
         history.push({ search: `?${params}` })
     };
 
@@ -128,7 +129,7 @@ export const WGS = () => {
                 <FormControlLabel
                     value="end"
                     control={<Switch onChange={() => setOperator(operator === 'union' ? 'intersection' : 'union')} checked={operator==='union'} />}
-                    label={operator==='union' ? 'Any' : 'All'}
+                    label={operator==='union' ? 'Or' : 'And'}
                     labelPlacement="end"
                 />
                 <div className={styles.mainContainer}>
