@@ -115,7 +115,7 @@ export const WGS = () => {
         <>
             <AppBar color="primary" position="absolute">
                 <Toolbar>
-                    <Typography>Whole Geneome Snapshot</Typography>
+                    <Typography>Whole Genome Snapshot</Typography>
                 </Toolbar>
             </AppBar>
             <Toolbar />
