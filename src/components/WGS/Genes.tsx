@@ -2,7 +2,7 @@ import React from "react";
 import { IPieChartFilter, withGenes, FilterMode } from "./store";
 import { CircularProgress, Button } from "@material-ui/core";
 
-export const Genes = ({filters, operator}: {filters: IPieChartFilter[], operator: FilterMode}) => {
+export const Genes = ({filters, operator, metadata}: {filters: IPieChartFilter[], operator: FilterMode, metadata: string}) => {
     const {loading, geneCount, triggerGeneDownload} = withGenes(filters, operator);
     return (
         <>
@@ -10,6 +10,7 @@ export const Genes = ({filters, operator}: {filters: IPieChartFilter[], operator
                 <>
                     <div>Hello. {geneCount} genes match this query.</div>
                     <Button onClick={triggerGeneDownload}>Download</Button>
+                    <pre>{metadata}</pre>
                 </>
             )}
         </>
