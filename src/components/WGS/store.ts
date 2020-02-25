@@ -63,6 +63,31 @@ export const withPieChartData = (filters: IPieChartFilter[] = [], mode: FilterMo
     return data;
 }
 
+export interface IMetadata {
+    genes: string;
+    annotations: string;
+}
+
+export const withMetadata = () => {
+    const [metadata, setMetadata] = React.useState<IMetadata>({genes:null, annotations:null});
+
+    React.useEffect(() => {
+        (async () => {
+            const [genes, annotations] = await Promise.all([
+                fetch(`${backend_host}/api/v1/genes_metadata`).then(result=>result.json()),
+                fetch(`${backend_host}/api/v1/annotations_metadata`).then(result=>result.json())
+            ]);
+
+            setMetadata({
+                genes: genes.metadata,
+                annotations: annotations.metadata
+            });
+        })();
+    }, [])
+
+    return metadata;
+}
+
 type GeneList = Array<{GeneID: string, GeneProductType: string}>;
 
 const backend_host = process.env.REACT_APP_API_HOSTNAME || '';

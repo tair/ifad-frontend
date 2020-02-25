@@ -1,6 +1,6 @@
 import React from "react";
 import { AppBar, Toolbar, Typography, makeStyles, Theme, Tabs, Tab, Switch, FormControlLabel } from "@material-ui/core";
-import { withPieChartData, AnnotationCategory, IPieChartFilter, FilterMode } from "./store";
+import { withPieChartData, AnnotationCategory, IPieChartFilter, FilterMode, withMetadata } from "./store";
 import { AspectPie } from "./pie";
 import { useLocation, useHistory, Link } from "react-router-dom";
 import { __RouterContext as RouteContext, useRouteMatch, Redirect } from "react-router";
@@ -84,6 +84,8 @@ export const WGS = () => {
     const query = useQuery();
     const history = useHistory();
 
+    const {genes: gene_metadata, annotations: annotation_metadata} = withMetadata();
+
     const operator = React.useMemo<FilterMode>((() => query.get("operator") as FilterMode || 'union'), [query]);
     const calculateSelected = () => ({ P: query.getAll("P") as AnnotationCategory[], F: query.getAll("F") as AnnotationCategory[], C: query.getAll("C") as AnnotationCategory[] });
     const selectedCategories = React.useMemo(calculateSelected, [query]);
@@ -151,10 +153,10 @@ export const WGS = () => {
                                     <Tab component={Link} to={{pathname: "annotations", search: ''+query}} value={"annotations"} label="Annotations" />
                                 </Tabs>
                                 <TabPanel value={"annotations"} index={sub_match.params.route}>
-                                    <Annotations filters={filters} operator={operator}/> 
+                                    <Annotations filters={filters} operator={operator} metadata={annotation_metadata}/> 
                                 </TabPanel>
                                 <TabPanel value={"genes"} index={sub_match.params.route}>
-                                    <Genes filters={filters} operator={operator}/> 
+                                    <Genes filters={filters} operator={operator} metadata={gene_metadata}/> 
                                 </TabPanel>
                             </>
                         ) : <Redirect to={`${match_path}/genes`} />
