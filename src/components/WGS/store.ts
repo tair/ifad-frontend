@@ -86,7 +86,7 @@ export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'u
     if(fetching){
         return {loading: true};
     } else {
-        const genes: GeneList = Object.values(data.annotatedGenes).concat(Object.values(data.unannotatedGenes)) as any;
+        const genes: GeneList = data.genes;
         geneQueryCache[queryParams] = {genes: genes.length, annotations: data.annotations.length};
         geneCount = genes.length;
         annotationCount = data.annotations.length;
