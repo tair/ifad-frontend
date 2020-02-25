@@ -6,6 +6,7 @@ import { useLocation, useHistory, Link } from "react-router-dom";
 import { __RouterContext as RouteContext, useRouteMatch, Redirect } from "react-router";
 import { Genes } from "./Genes";
 import { Annotations } from "./Annotations";
+import { grey } from "@material-ui/core/colors";
 
 const TabPanel = (props: { children: JSX.Element | JSX.Element[], index: any, value: any }) => {
     const { children, value, index, ...other } = props;
@@ -43,6 +44,12 @@ const withStyles = makeStyles((theme: Theme) => ({
     },
     header: {
         textAlign: "center"
+    },
+    aboutContainer: {
+        padding: theme.spacing(3),
+        paddingBottom: theme.spacing(6),
+        marginBottom: theme.spacing(3),
+        borderBottom: `2px solid ${grey[500]}`
     }
 }))
 
@@ -115,11 +122,14 @@ export const WGS = () => {
         <>
             <AppBar color="primary" position="absolute">
                 <Toolbar>
-                    <Typography>Whole Geneome Snapshot</Typography>
+                    <Typography>Whole Genome Snapshot</Typography>
                 </Toolbar>
             </AppBar>
             <Toolbar />
             <div className={styles.container}>
+                <div className={styles.aboutContainer}>
+                Explore the state of annotation of the Arabidopsis thaliana genome based on annotation status using the Gene Ontology (GO) aspects of Molecular Function, Biological Process, and Cellular Component.
+                </div>
                 <div className={styles.chartContainer}>
                     <AspectPie data={F} label="Molecular Function" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, F: actives }))} activeCategories={selectedCategories.F} />
                     <AspectPie data={P} label="Biological Process" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, P: actives }))} activeCategories={selectedCategories.P} />
