@@ -3,9 +3,9 @@ import { IPieChartFilter, withGenes, FilterMode } from "./store";
 import { CircularProgress, Button } from "@material-ui/core";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
-export const Genes = ({filters, operator, metadata}: {filters: IPieChartFilter[], operator: FilterMode, metadata: string}) => {
+export const Genes = ({filters, operator}: {filters: IPieChartFilter[], operator: FilterMode}) => {
     
-    const {loading, geneCount, triggerGeneDownload} = withGenes(filters, operator);
+    const {loading, geneCount, triggerGeneDownload, genesMeta} = withGenes(filters, operator);
     return (
         <div style={{padding:16}}>
             {loading ? <CircularProgress/> : (
@@ -18,7 +18,7 @@ export const Genes = ({filters, operator, metadata}: {filters: IPieChartFilter[]
                     >Download {geneCount} genes</Button>
 
                     <h4>Source Metadata:</h4>
-                    <pre>{metadata}</pre>
+                    <pre>{genesMeta}</pre>
                 </>
             )}
         </div>

@@ -3,7 +3,7 @@ import { IPieChartFilter, FilterMode, withGenes } from "./store";
 import { CircularProgress, Button } from "@material-ui/core";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
-export const Annotations = ({filters, operator, metadata}: {filters: IPieChartFilter[], operator: FilterMode, metadata: string}) => {
+export const Annotations = ({filters, operator}: {filters: IPieChartFilter[], operator: FilterMode}) => {
     const results = withGenes(filters, operator);
     return (
         <div style={{padding:16}}>
@@ -17,7 +17,7 @@ export const Annotations = ({filters, operator, metadata}: {filters: IPieChartFi
                     >Download {results.annotationCount} annotations</Button>
 
                     <h4>Source Metadata:</h4>
-                    <pre>{metadata}</pre>
+                    <pre>{results.annotationsMeta}</pre>
                 </>
             )}
         </div>
