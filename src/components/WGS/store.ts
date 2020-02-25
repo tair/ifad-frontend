@@ -68,33 +68,13 @@ export interface IMetadata {
     annotations: string;
 }
 
-export const withMetadata = () => {
-    const [metadata, setMetadata] = React.useState<IMetadata>({genes:null, annotations:null});
-
-    React.useEffect(() => {
-        (async () => {
-            const [genes, annotations] = await Promise.all([
-                fetch(`${backend_host}/api/v1/genes_metadata`).then(result=>result.json()),
-                fetch(`${backend_host}/api/v1/annotations_metadata`).then(result=>result.json())
-            ]);
-
-            setMetadata({
-                genes: genes.metadata,
-                annotations: annotations.metadata
-            });
-        })();
-    }, [])
-
-    return metadata;
-}
-
 type GeneList = Array<{GeneID: string, GeneProductType: string}>;
 
 const backend_host = process.env.REACT_APP_API_HOSTNAME || '';
 
 const geneQueryCache: {[key: string]: {genes: number, annotations: number}} = {};
 // const globalLoading = {};
-export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'union'): {loading: boolean, geneCount?: number, annotationCount?: number, triggerGeneDownload?: () => void, triggerAnnotationDownload?: () => void} => {
+export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'union'): {loading: boolean, genesMeta?: string, annotationsMeta?: string, geneCount?: number, annotationCount?: number, triggerGeneDownload?: () => void, triggerAnnotationDownload?: () => void} => {
         const _queryParams = new URLSearchParams({
         strategy: mode
     });
@@ -108,6 +88,9 @@ export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'u
     let geneCount = 0;
     let annotationCount = 0;
 
+    let genesMeta = "";
+    let annotationsMeta = "";
+
     if(fetching){
         return {loading: true};
     } else {
@@ -115,6 +98,8 @@ export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'u
         geneQueryCache[queryParams] = {genes: genes.length, annotations: data.annotations.length};
         geneCount = genes.length;
         annotationCount = data.annotations.length;
+        genesMeta = data.gene_metadata;
+        annotationsMeta = data.annotation_metadata;
     }
 
     const triggerGeneDownload = () => {
@@ -127,5 +112,5 @@ export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'u
         window.location.href = `${backend_host}/api/v1/genes?${_queryParams}`
     }
 
-    return {loading: false, geneCount, annotationCount, triggerGeneDownload, triggerAnnotationDownload}; 
+    return {loading: false, geneCount, annotationCount, genesMeta, annotationsMeta, triggerGeneDownload, triggerAnnotationDownload}; 
 }
