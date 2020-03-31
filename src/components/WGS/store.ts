@@ -1,5 +1,6 @@
 import React from "react";
 import useFetch from "use-http";
+import { useDebounce } from 'use-debounce';
 
 export type Aspect = 'P' | 'F' | 'C';
 export type AnnotationCategory = 'EXP' | 'OTHER' | 'UNKNOWN' | 'UNANNOTATED'
@@ -81,7 +82,7 @@ export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'u
 
     filters.map(f => `${f.aspect.toUpperCase()},${f.category.toUpperCase()}`).forEach(filter => _queryParams.append('filter[]', filter));
 
-    const queryParams = _queryParams.toString();
+    const [queryParams] = useDebounce(_queryParams.toString(), 2500, {leading: true});
 
     const { loading, error, data } = useFetch({url:`${backend_host}/api/v1/genes?${queryParams}`}, [queryParams]);
 
