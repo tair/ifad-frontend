@@ -38,11 +38,11 @@ export const withPieChartData = (filters: IPieChartFilter[] = [], mode: FilterMo
                         [aspect]: [
                             {
                                 name: "EXP",
-                                value: info.known.exp,
+                                value: info.knownExp,
                             },
                             {
                                 name: "OTHER",
-                                value: info.known.other,
+                                value: info.knownOther,
                             },
                             {
                                 name: "UNKNOWN",
