@@ -7,7 +7,7 @@ export const Annotations = ({filters, operator}: {filters: IPieChartFilter[], op
     const results = withGenes(filters, operator);
     return (
         <div style={{padding:16}}>
-            {results.loading ? <CircularProgress/> : (
+            {results.loading ? <CircularProgress/> : results.error ? <span>{JSON.stringify(results.error)}</span> : (
                 <>
                     <Button 
                         variant="contained" 

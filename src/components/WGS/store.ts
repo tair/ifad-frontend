@@ -1,5 +1,5 @@
 import React from "react";
-import { useFetch } from "@bjornagh/use-fetch";
+import useFetch from "use-http";
 
 export type Aspect = 'P' | 'F' | 'C';
 export type AnnotationCategory = 'EXP' | 'OTHER' | 'UNKNOWN' | 'UNANNOTATED'
@@ -74,7 +74,7 @@ const backend_host = process.env.REACT_APP_API_HOSTNAME || '';
 
 const geneQueryCache: {[key: string]: {genes: number, annotations: number}} = {};
 // const globalLoading = {};
-export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'union'): {loading: boolean, genesMeta?: string, annotationsMeta?: string, geneCount?: number, annotationCount?: number, triggerGeneDownload?: () => void, triggerAnnotationDownload?: () => void} => {
+export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'union'): {loading?: boolean, error?: any, genesMeta?: string, annotationsMeta?: string, geneCount?: number, annotationCount?: number, triggerGeneDownload?: () => void, triggerAnnotationDownload?: () => void} => {
         const _queryParams = new URLSearchParams({
         strategy: mode
     });
@@ -83,7 +83,7 @@ export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'u
 
     const queryParams = _queryParams.toString();
 
-    const { data, fetching } = useFetch<{annotatedGenes: any, unannotatedGenes: any, annotations: any[]}>({url:`${backend_host}/api/v1/genes?${queryParams}`});
+    const { loading, error, data } = useFetch({url:`${backend_host}/api/v1/genes?${queryParams}`}, [queryParams]);
 
     let geneCount = 0;
     let annotationCount = 0;
@@ -91,8 +91,10 @@ export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'u
     let genesMeta = "";
     let annotationsMeta = "";
 
-    if(fetching){
+    if(loading){
         return {loading: true};
+    } else if (error){
+        return {error}
     } else {
         const genes: GeneList = data.genes;
         geneQueryCache[queryParams] = {genes: genes.length, annotations: data.annotations.length};
