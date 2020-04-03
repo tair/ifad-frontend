@@ -1,7 +1,7 @@
 import React from "react";
-import { AppBar, Toolbar, Typography, makeStyles, Theme, Tabs, Tab, IconButton, Tooltip } from "@material-ui/core";
+import { AppBar, Toolbar, Typography, makeStyles, Theme, Tabs, Tab, IconButton, Tooltip, Divider } from "@material-ui/core";
 import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab";
-import {withPieChartData, AnnotationCategory, IPieChartSegment, QueryStrategy, GeneProductTypeFilter} from "./store";
+import { withPieChartData, AnnotationCategory, IPieChartSegment, QueryStrategy, GeneProductTypeFilter } from "./store";
 import { AspectPie } from "./pie";
 import { useLocation, useHistory, Link } from "react-router-dom";
 import { __RouterContext as RouteContext, useRouteMatch, Redirect } from "react-router";
@@ -41,7 +41,6 @@ const withStyles = makeStyles((theme: Theme) => ({
     container: {
         display: "flex",
         flexDirection: "column",
-        height: "100%",
         padding: theme.spacing(5)
     },
     header: {
@@ -115,6 +114,11 @@ export const WGS = () => {
         history.push({ search: `?${query}` });
     }
 
+    const setFilterType = (filter: GeneProductTypeFilter) => {
+        query.set("filter", filter);
+        history.push({search: `?${query}`})
+    }
+
     const match_path = React.useContext(RouteContext).match.path;
 
     const sub_match = useRouteMatch<{ route: string }>(`${match_path}/:route`);
@@ -133,7 +137,7 @@ export const WGS = () => {
                 <div className={styles.aboutContainer}>
                     Explore the state of annotation of the Arabidopsis thaliana genome based on annotation status using the Gene Ontology (GO) aspects of Molecular Function, Biological Process, and Cellular Component.
                 </div>
-                <div style={{
+                {/* <div style={{
                     width: "100%",
                     display: "flex",
                     justifyContent: "flex-end"
@@ -141,21 +145,48 @@ export const WGS = () => {
                     <Tooltip title="Reset filters">
                         <IconButton onClick={() => setSelectedCategories({ F: [], P: [], C: [] })} ><RotateLeftIcon /></IconButton>
                     </Tooltip>
-                </div>
+                </div> */}
                 <div className={styles.chartContainer}>
                     <AspectPie data={F} label="Molecular Function" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, F: actives }))} activeCategories={selectedCategories.F} />
                     <AspectPie data={P} label="Biological Process" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, P: actives }))} activeCategories={selectedCategories.P} />
                     <AspectPie data={C} label="Cellular Component" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, C: actives }))} activeCategories={selectedCategories.C} />
                 </div>
-                <Typography variant="h6">Filter: <ul>{segments.map(f => <span>{aspectHR[f.aspect]} - {statusHR[f.category]}</span>).reduce((accum, curr) => [...accum, <li> {curr} {accum.length < segments.length - 1 ? <b> {strategyHR[strategy]} </b> : null} </li>], [])}</ul></Typography>
-                <ToggleButtonGroup
+                <div style={{
+                    display: "inherit",
+                    alignItems: "center",
+                    marginTop: 12
+                }}>
+                    <Tooltip title="Reset filters">
+                        <IconButton onClick={() => {history.push({search:`?`})}} ><RotateLeftIcon /></IconButton>
+                    </Tooltip>
+                    <Typography variant="h5">Operator: </Typography>
+                    <ToggleButtonGroup
                         value={strategy}
                         exclusive
                         onChange={(_, v) => setOperator(v)}
+                        size="small"
+                        style={{ padding: 16 }}
                     >
-                        <ToggleButton value="union">Or</ToggleButton>
-                        <ToggleButton value="intersection">And</ToggleButton>
+                        <ToggleButton value="union"><Tooltip title="Filter for data that matches EVERY filter"><span>Or</span></Tooltip></ToggleButton>
+                        <ToggleButton value="intersection"><Tooltip title="Filter for data that matches ANY filter"><span>And</span></Tooltip></ToggleButton>
                     </ToggleButtonGroup>
+                    <Typography variant="h5">Filter Type: </Typography>
+                    <ToggleButtonGroup
+                        value={filter}
+                        exclusive
+                        onChange={(_, v) => setFilterType(v)}
+                        size="small"
+                        style={{ padding: 16 }}
+                    >
+                        <ToggleButton value="all"><Tooltip title="Will return the original query result unchanged."><span>All</span></Tooltip></ToggleButton>
+                        <ToggleButton value="include_protein"><Tooltip title="Will return only genes and annotations whose Gene Product Type is 'protein_coding'"><span>Include Protein</span></Tooltip></ToggleButton>
+                        <ToggleButton value="exclude_pseudogene"><Tooltip title="Will return only genes and annotations whose Gene Product Type is _not_ 'pseudogene'"><span>Exclude Pseudogene</span></Tooltip></ToggleButton>
+                    </ToggleButtonGroup>
+
+                </div>
+                <Typography style={{ fontSize: 16 }}>
+                    <ul style={{ marginTop: 0 }}>{segments.map(f => <span>{aspectHR[f.aspect]} - {statusHR[f.category]}</span>).reduce((accum, curr) => [...accum, <li> {curr} {accum.length < segments.length - 1 ? <b> {strategyHR[strategy]} </b> : null} </li>], [])}</ul>
+                </Typography>
                 <div className={styles.mainContainer}>
                     {
                         sub_match ? (

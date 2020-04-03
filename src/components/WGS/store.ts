@@ -1,5 +1,5 @@
 import React from "react";
-import useFetch from "use-http";
+import { useFetch } from "@bjornagh/use-fetch";
 import { useDebounce } from 'use-debounce';
 
 export type Aspect = 'P' | 'F' | 'C';
@@ -79,20 +79,18 @@ type GeneList = Array<{GeneID: string, GeneProductType: string}>;
 
 const backend_host = process.env.REACT_APP_API_HOSTNAME || '';
 
-const geneQueryCache: {[key: string]: {genes: number, annotations: number}} = {};
-// const globalLoading = {};
 export const withGenes = (
     segments: IPieChartSegment[] = [],
     strategy: QueryStrategy = 'union',
     filter: GeneProductTypeFilter = "exclude_pseudogene",
 ): {loading?: boolean, error?: any, genesMeta?: string, annotationsMeta?: string, geneCount?: number, annotationCount?: number, triggerGeneDownload?: () => void, triggerAnnotationDownload?: () => void} => {
-    const _queryParams = new URLSearchParams({ strategy, filter });
+    const _queryParams = new URLSearchParams({ strategy, filter, format: "json" });
 
     segments.map(s => `${s.aspect.toUpperCase()},${s.category.toUpperCase()}`).forEach(segment => _queryParams.append('segments[]', segment));
 
-    const [queryParams] = useDebounce(_queryParams.toString(), 2500, {leading: true});
+    const [queryParams] = useDebounce(_queryParams.toString(), 250, {leading: true});
 
-    const { loading, error, data } = useFetch({url:`${backend_host}/api/v1/genes?${queryParams}`}, [queryParams]);
+    const { fetching: loading, error, data } = useFetch({url:`${backend_host}/api/v1/genes?${queryParams}`}, [queryParams]);
 
     let geneCount = 0;
     let annotationCount = 0;
@@ -105,10 +103,8 @@ export const withGenes = (
     } else if (error){
         return {error}
     } else {
-        const genes: GeneList = data.genes;
-        geneQueryCache[queryParams] = {genes: genes.length, annotations: data.annotations.length};
-        geneCount = genes.length;
-        annotationCount = data.annotations.length;
+        geneCount = data.gene_count;
+        annotationCount = data.annotation_count;
         genesMeta = data.gene_metadata;
         annotationsMeta = data.annotation_metadata;
     }
