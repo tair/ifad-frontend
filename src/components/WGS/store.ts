@@ -4,9 +4,10 @@ import { useDebounce } from 'use-debounce';
 
 export type Aspect = 'P' | 'F' | 'C';
 export type AnnotationCategory = 'EXP' | 'OTHER' | 'UNKNOWN' | 'UNANNOTATED'
-export type FilterMode = 'union' | 'intersection';
+export type QueryStrategy = 'union' | 'intersection';
+export type GeneProductTypeFilter = "all" | "include_protein" | "exclude_pseudogene";
 
-export interface IPieChartFilter {
+export interface IPieChartSegment {
     aspect: Aspect,
     category: AnnotationCategory
 }
@@ -20,12 +21,17 @@ export type IPieChartData = {
     [key in Aspect]: IPieChartSlice[]
 }
 
-export const withPieChartData = (filters: IPieChartFilter[] = [], mode: FilterMode = 'union'): IPieChartData => { 
+export const withPieChartData = (
+    segments: IPieChartSegment[] = [],
+    strategy: QueryStrategy = 'union',
+    filter: GeneProductTypeFilter = "exclude_pseudogene",
+): IPieChartData => {
     const [data, setData] = React.useState<IPieChartData>({P:[],F:[],C:[]});
+    const queryParams = new URLSearchParams({ filter });
     
     React.useEffect(() => {
         (async () => {
-            const result = await fetch(`${backend_host}/api/v1/wgs_segments`);
+            const result = await fetch(`${backend_host}/api/v1/wgs_segments?${queryParams}`);
             const jsonified = await result.json();
 
             console.log(jsonified);
@@ -75,12 +81,14 @@ const backend_host = process.env.REACT_APP_API_HOSTNAME || '';
 
 const geneQueryCache: {[key: string]: {genes: number, annotations: number}} = {};
 // const globalLoading = {};
-export const withGenes = (filters: IPieChartFilter[] = [], mode: FilterMode = 'union'): {loading?: boolean, error?: any, genesMeta?: string, annotationsMeta?: string, geneCount?: number, annotationCount?: number, triggerGeneDownload?: () => void, triggerAnnotationDownload?: () => void} => {
-        const _queryParams = new URLSearchParams({
-        strategy: mode
-    });
+export const withGenes = (
+    segments: IPieChartSegment[] = [],
+    strategy: QueryStrategy = 'union',
+    filter: GeneProductTypeFilter = "exclude_pseudogene",
+): {loading?: boolean, error?: any, genesMeta?: string, annotationsMeta?: string, geneCount?: number, annotationCount?: number, triggerGeneDownload?: () => void, triggerAnnotationDownload?: () => void} => {
+    const _queryParams = new URLSearchParams({ strategy, filter });
 
-    filters.map(f => `${f.aspect.toUpperCase()},${f.category.toUpperCase()}`).forEach(filter => _queryParams.append('filter[]', filter));
+    segments.map(s => `${s.aspect.toUpperCase()},${s.category.toUpperCase()}`).forEach(segment => _queryParams.append('segments[]', segment));
 
     const [queryParams] = useDebounce(_queryParams.toString(), 2500, {leading: true});
 

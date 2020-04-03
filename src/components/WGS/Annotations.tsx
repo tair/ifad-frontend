@@ -1,10 +1,10 @@
 import React from "react";
-import { IPieChartFilter, FilterMode, withGenes } from "./store";
+import {GeneProductTypeFilter, IPieChartSegment, QueryStrategy, withGenes} from "./store";
 import { CircularProgress, Button } from "@material-ui/core";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
-export const Annotations = ({filters, operator}: {filters: IPieChartFilter[], operator: FilterMode}) => {
-    const results = withGenes(filters, operator);
+export const Annotations = ({segments, strategy, filter}: {segments: IPieChartSegment[], strategy: QueryStrategy, filter: GeneProductTypeFilter}) => {
+    const results = withGenes(segments, strategy, filter);
     return (
         <div style={{padding:16}}>
             {results.loading ? <CircularProgress/> : results.error ? <span>{JSON.stringify(results.error)}</span> : (
