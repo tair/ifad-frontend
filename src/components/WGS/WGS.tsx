@@ -1,5 +1,5 @@
 import React from "react";
-import { AppBar, Toolbar, Typography, makeStyles, Theme, Tabs, Tab, IconButton, Icon, Tooltip, ButtonGroup } from "@material-ui/core";
+import { AppBar, Toolbar, Typography, makeStyles, Theme, Tabs, Tab, IconButton, Tooltip } from "@material-ui/core";
 import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab";
 import {withPieChartData, AnnotationCategory, IPieChartSegment, QueryStrategy, GeneProductTypeFilter} from "./store";
 import { AspectPie } from "./pie";
