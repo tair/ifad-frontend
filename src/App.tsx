@@ -10,8 +10,6 @@ const withStyles = makeStyles((_theme: Theme) => ({
     }
 }))
 
-const cache = new Map();
-
 export const App = () => {
     const classes = withStyles({});
 

@@ -1,7 +1,7 @@
 import React from "react";
-import { AppBar, Toolbar, Typography, makeStyles, Theme, Tabs, Tab, IconButton, Icon, Tooltip, ButtonGroup } from "@material-ui/core";
+import { AppBar, Toolbar, Typography, makeStyles, Theme, Tabs, Tab, IconButton, Tooltip } from "@material-ui/core";
 import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab";
-import { withPieChartData, AnnotationCategory, IPieChartFilter, FilterMode } from "./store";
+import {withPieChartData, AnnotationCategory, IPieChartSegment, QueryStrategy, GeneProductTypeFilter} from "./store";
 import { AspectPie } from "./pie";
 import { useLocation, useHistory, Link } from "react-router-dom";
 import { __RouterContext as RouteContext, useRouteMatch, Redirect } from "react-router";
@@ -72,7 +72,7 @@ const statusHR = {
     'UNANNOTATED': "Unannotated"
 }
 
-const operatorHR = {
+const strategyHR = {
     'intersection': "And",
     'union': "Or",
 }
@@ -86,10 +86,11 @@ export const WGS = () => {
     const query = useQuery();
     const history = useHistory();
 
-    const operator = React.useMemo<FilterMode>((() => query.get("operator") as FilterMode || 'union'), [query]);
+    const strategy = React.useMemo<QueryStrategy>((() => query.get("strategy") as QueryStrategy || 'union'), [query]);
+    const filter: GeneProductTypeFilter = React.useMemo<GeneProductTypeFilter>((() => query.get("filter") as GeneProductTypeFilter || 'exclude_pseudogene'), [query]);
     const calculateSelected = () => ({ P: query.getAll("P") as AnnotationCategory[], F: query.getAll("F") as AnnotationCategory[], C: query.getAll("C") as AnnotationCategory[] });
     const selectedCategories = React.useMemo(calculateSelected, [query]);
-    const filters: Array<IPieChartFilter> = React.useMemo(
+    const segments: Array<IPieChartSegment> = React.useMemo(
         (
             () => Object.entries(selectedCategories)
                 .map(([aspect, categories]: [keyof typeof selectedCategories, AnnotationCategory[]]) => categories.map(category => ({ aspect, category })))
@@ -105,12 +106,12 @@ export const WGS = () => {
                 params.append(aspect, cat);
             }
         })
-        params.set("operator", operator);
+        params.set("strategy", strategy);
         history.push({ search: `?${params}` })
     };
 
-    const setOperator = (op: FilterMode) => {
-        query.set("operator", op);
+    const setOperator = (strategy: QueryStrategy) => {
+        query.set("strategy", strategy);
         history.push({ search: `?${query}` });
     }
 
@@ -146,9 +147,9 @@ export const WGS = () => {
                     <AspectPie data={P} label="Biological Process" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, P: actives }))} activeCategories={selectedCategories.P} />
                     <AspectPie data={C} label="Cellular Component" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, C: actives }))} activeCategories={selectedCategories.C} />
                 </div>
-                <Typography variant="h6">Filter: <ul>{filters.map(f => <span>{aspectHR[f.aspect]} - {statusHR[f.category]}</span>).reduce((accum, curr) => [...accum, <li> {curr} {accum.length < filters.length - 1 ? <b> {operatorHR[operator]} </b> : null} </li>], [])}</ul></Typography>
+                <Typography variant="h6">Filter: <ul>{segments.map(f => <span>{aspectHR[f.aspect]} - {statusHR[f.category]}</span>).reduce((accum, curr) => [...accum, <li> {curr} {accum.length < segments.length - 1 ? <b> {strategyHR[strategy]} </b> : null} </li>], [])}</ul></Typography>
                 <ToggleButtonGroup
-                        value={operator}
+                        value={strategy}
                         exclusive
                         onChange={(_, v) => setOperator(v)}
                     >
@@ -164,10 +165,10 @@ export const WGS = () => {
                                     <Tab component={Link} to={{ pathname: "annotations", search: '' + query }} value={"annotations"} label="Annotations" />
                                 </Tabs>
                                 <TabPanel value={"annotations"} index={sub_match.params.route}>
-                                    <Annotations filters={filters} operator={operator} />
+                                    <Annotations segments={segments} strategy={strategy} filter={filter} />
                                 </TabPanel>
                                 <TabPanel value={"genes"} index={sub_match.params.route}>
-                                    <Genes filters={filters} operator={operator} />
+                                    <Genes segments={segments} strategy={strategy} filter={filter} />
                                 </TabPanel>
                             </>
                         ) : <Redirect to={`${match_path}/genes`} />
