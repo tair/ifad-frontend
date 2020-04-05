@@ -77,16 +77,14 @@ const strategyHR = {
 }
 
 export const WGS = () => {
-    const {
-        P, F, C
-    } = withPieChartData();
-    const styles = withStyles({});
-
     const query = useQuery();
     const history = useHistory();
+    const styles = withStyles({});
+
+    const filter: GeneProductTypeFilter = React.useMemo<GeneProductTypeFilter>((() => query.get("filter") as GeneProductTypeFilter || 'exclude_pseudogene'), [query]);
+    const { P, F, C } = withPieChartData(filter);
 
     const strategy = React.useMemo<QueryStrategy>((() => query.get("strategy") as QueryStrategy || 'union'), [query]);
-    const filter: GeneProductTypeFilter = React.useMemo<GeneProductTypeFilter>((() => query.get("filter") as GeneProductTypeFilter || 'exclude_pseudogene'), [query]);
     const calculateSelected = () => ({ P: query.getAll("P") as AnnotationCategory[], F: query.getAll("F") as AnnotationCategory[], C: query.getAll("C") as AnnotationCategory[] });
     const selectedCategories = React.useMemo(calculateSelected, [query]);
     const segments: Array<IPieChartSegment> = React.useMemo(

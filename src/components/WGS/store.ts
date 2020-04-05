@@ -22,8 +22,6 @@ export type IPieChartData = {
 }
 
 export const withPieChartData = (
-    segments: IPieChartSegment[] = [],
-    strategy: QueryStrategy = 'union',
     filter: GeneProductTypeFilter = "exclude_pseudogene",
 ): IPieChartData => {
     const [data, setData] = React.useState<IPieChartData>({P:[],F:[],C:[]});
@@ -65,7 +63,7 @@ export const withPieChartData = (
 
             setData(newData);
         })();
-    }, []);
+    }, [queryParams]);
 
     return data;
 }
