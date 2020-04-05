@@ -1,6 +1,4 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/styles';
-import { Theme } from '@material-ui/core';
 import { Route, Redirect, Switch } from 'react-router-dom';
 import { WGS } from './components/WGS/WGS';
 import {FetchProvider} from "@bjornagh/use-fetch";
