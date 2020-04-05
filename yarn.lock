@@ -810,6 +810,13 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
+"@bjornagh/use-fetch@^0.0.12":
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/@bjornagh/use-fetch/-/use-fetch-0.0.12.tgz#305d9b65b8c550f514d4def0be803b78e4d2bb49"
+  integrity sha512-BxVoHE5e7pPmuzgXkbSZRhft1MS8BESL7rb9tuMatZEbK4BIH+H5M8yALkRU2ukRa0uGf7+mf540rUt6iPvbEw==
+  dependencies:
+    fetch-dedupe "^3.0.0"
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.3.tgz#099139eaec7ebf07a27c1786a3ff64f39464d2ef"
@@ -4165,6 +4172,11 @@ fb-watchman@^2.0.0:
   integrity sha1-VOmr99+i8mzZsWNsWIwa/AXeXVg=
   dependencies:
     bser "^2.0.0"
+
+fetch-dedupe@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/fetch-dedupe/-/fetch-dedupe-3.0.0.tgz#3703f4ace2a949d95bf2e28e69da97b27e845d8e"
+  integrity sha512-cZV4fPN8RwYIwjc9z6fqnAojs7w+wvaSYio0N0U11PnlCeVv3BB+1qO2rSXyjltua5kl18AMHvrASN5XyOIGKw==
 
 figgy-pudding@^3.5.1:
   version "3.5.1"
@@ -10057,18 +10069,6 @@ use-debounce@^3.4.0:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/use-debounce/-/use-debounce-3.4.0.tgz#e61653fd4daad9beaa6e4695bc1d3fbd35f7e5b3"
   integrity sha512-FSUfs/x7eJUusqvbk/UboMlWKQFBEGTegqK2tvm8+59bcbs77f0DeAy4MuychfxN7E+6rxXDpbv41Kq+aSJPow==
-
-use-http@^0.4.3:
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/use-http/-/use-http-0.4.3.tgz#7f1d6a52dc8c730c09ff20d59677ac34133391c7"
-  integrity sha512-Lkpu1WYsR2ji/xRwvvWfj3LlSqY0E1AIMt9H8t3UoGg3NTKLiZ1Ag1sScGpz3k0zoe9aIeH2TiBaTXnOOFaRiA==
-  dependencies:
-    use-ssr "^1.0.22"
-
-use-ssr@^1.0.22:
-  version "1.0.22"
-  resolved "https://registry.yarnpkg.com/use-ssr/-/use-ssr-1.0.22.tgz#a43c2587b1907fabda61c6542b80542c619228fe"
-  integrity sha512-0kA0qfI4uw7PeRsz7X0XOdl2CdbgMBSFhj3n5JzMu8ZNlcZ2NrarhGjdmoxW1Q5d3WtNKbCNIjns/CKhpL7z8g==
 
 use@^3.1.0:
   version "3.1.1"
