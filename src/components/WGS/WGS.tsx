@@ -1,5 +1,5 @@
 import React from "react";
-import { AppBar, Toolbar, Typography, makeStyles, Theme, Tabs, Tab, IconButton, Tooltip } from "@material-ui/core";
+import { AppBar, Toolbar, Typography, makeStyles, Theme, Tabs, Tab, IconButton, Tooltip, CircularProgress, LinearProgress } from "@material-ui/core";
 import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab";
 import { withPieChartData, AnnotationCategory, IPieChartSegment, QueryStrategy, GeneProductTypeFilter } from "./store";
 import { AspectPie } from "./pie";
@@ -82,9 +82,13 @@ export const WGS = () => {
     const styles = withStyles({});
 
     const filter: GeneProductTypeFilter = React.useMemo<GeneProductTypeFilter>((() => query.get("filter") as GeneProductTypeFilter || 'exclude_pseudogene'), [query]);
-    const { P, F, C } = withPieChartData(filter);
-
     const strategy = React.useMemo<QueryStrategy>((() => query.get("strategy") as QueryStrategy || 'union'), [query]);
+
+    const { loading, error, data } = withPieChartData(strategy, filter);
+    const { P, F, C } = data || {};
+
+    debugger;
+
     const calculateSelected = () => ({ P: query.getAll("P") as AnnotationCategory[], F: query.getAll("F") as AnnotationCategory[], C: query.getAll("C") as AnnotationCategory[] });
     const selectedCategories = React.useMemo(calculateSelected, [query]);
     const segments: Array<IPieChartSegment> = React.useMemo(
@@ -114,7 +118,7 @@ export const WGS = () => {
 
     const setFilterType = (filter: GeneProductTypeFilter) => {
         query.set("filter", filter);
-        history.push({search: `?${query}`})
+        history.push({ search: `?${query}` })
     }
 
     const match_path = React.useContext(RouteContext).match.path;
@@ -122,7 +126,6 @@ export const WGS = () => {
     const sub_match = useRouteMatch<{ route: string }>(`${match_path}/:route`);
 
     // const filter = filters.map(f => `${f.aspect},${f.category}`).join("&");
-
     return (
         <>
             <AppBar color="primary" position="absolute">
@@ -135,19 +138,14 @@ export const WGS = () => {
                 <div className={styles.aboutContainer}>
                     Explore the state of annotation of the Arabidopsis thaliana genome based on annotation status using the Gene Ontology (GO) aspects of Molecular Function, Biological Process, and Cellular Component.
                 </div>
-                {/* <div style={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "flex-end"
-                }}>
-                    <Tooltip title="Reset filters">
-                        <IconButton onClick={() => setSelectedCategories({ F: [], P: [], C: [] })} ><RotateLeftIcon /></IconButton>
-                    </Tooltip>
-                </div> */}
                 <div className={styles.chartContainer}>
-                    <AspectPie data={F} label="Molecular Function" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, F: actives }))} activeCategories={selectedCategories.F} />
-                    <AspectPie data={P} label="Biological Process" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, P: actives }))} activeCategories={selectedCategories.P} />
-                    <AspectPie data={C} label="Cellular Component" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, C: actives }))} activeCategories={selectedCategories.C} />
+                    {error ? <span>{error.toString()}</span> : data ? (
+                        <>
+                            <AspectPie data={F} label="Molecular Function" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, F: actives }))} activeCategories={selectedCategories.F} />
+                            <AspectPie data={P} label="Biological Process" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, P: actives }))} activeCategories={selectedCategories.P} />
+                            <AspectPie data={C} label="Cellular Component" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, C: actives }))} activeCategories={selectedCategories.C} />
+                        </>
+                    ) : null}
                 </div>
                 <div style={{
                     display: "inherit",
@@ -155,7 +153,7 @@ export const WGS = () => {
                     marginTop: 12
                 }}>
                     <Tooltip title="Reset filters">
-                        <IconButton onClick={() => {history.push({search:`?`})}} ><RotateLeftIcon /></IconButton>
+                        <IconButton onClick={() => { history.push({ search: `?` }) }} ><RotateLeftIcon /></IconButton>
                     </Tooltip>
                     <Typography variant="h5">Operator: </Typography>
                     <ToggleButtonGroup
