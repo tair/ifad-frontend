@@ -81,13 +81,11 @@ export const WGS = () => {
     const history = useHistory();
     const styles = withStyles({});
 
-    const filter: GeneProductTypeFilter = React.useMemo<GeneProductTypeFilter>((() => query.get("filter") as GeneProductTypeFilter || 'exclude_pseudogene'), [query]);
+    const filter: GeneProductTypeFilter = React.useMemo<GeneProductTypeFilter>((() => query.get("filter") as GeneProductTypeFilter || 'all'), [query]);
     const strategy = React.useMemo<QueryStrategy>((() => query.get("strategy") as QueryStrategy || 'union'), [query]);
 
     const { loading, error, data } = withPieChartData(strategy, filter);
     const { P, F, C } = data || {};
-
-    debugger;
 
     const calculateSelected = () => ({ P: query.getAll("P") as AnnotationCategory[], F: query.getAll("F") as AnnotationCategory[], C: query.getAll("C") as AnnotationCategory[] });
     const selectedCategories = React.useMemo(calculateSelected, [query]);
@@ -159,7 +157,7 @@ export const WGS = () => {
                     <ToggleButtonGroup
                         value={strategy}
                         exclusive
-                        onChange={(_, v) => setOperator(v)}
+                        onChange={(_, v) => {if (v) setOperator(v)}}
                         size="small"
                         style={{ padding: 16 }}
                     >
@@ -170,13 +168,12 @@ export const WGS = () => {
                     <ToggleButtonGroup
                         value={filter}
                         exclusive
-                        onChange={(_, v) => setFilterType(v)}
+                        onChange={(_, v) => {if(v) setFilterType(v)}}
                         size="small"
                         style={{ padding: 16 }}
                     >
                         <ToggleButton value="all"><Tooltip title="Will return the original query result unchanged."><span>All</span></Tooltip></ToggleButton>
-                        <ToggleButton value="include_protein"><Tooltip title="Will return only genes and annotations whose Gene Product Type is 'protein_coding'"><span>Include Protein</span></Tooltip></ToggleButton>
-                        <ToggleButton value="exclude_pseudogene"><Tooltip title="Will return only genes and annotations whose Gene Product Type is _not_ 'pseudogene'"><span>Exclude Pseudogene</span></Tooltip></ToggleButton>
+                        <ToggleButton value="include_protein"><Tooltip title="Will return only genes and annotations whose Gene Product Type is 'protein_coding'"><span>Only Protein</span></Tooltip></ToggleButton>
                     </ToggleButtonGroup>
 
                 </div>

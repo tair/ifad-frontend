@@ -5,7 +5,7 @@ import { useDebounce } from 'use-debounce';
 export type Aspect = 'P' | 'F' | 'C';
 export type AnnotationCategory = 'EXP' | 'OTHER' | 'UNKNOWN' | 'UNANNOTATED'
 export type QueryStrategy = 'union' | 'intersection';
-export type GeneProductTypeFilter = "all" | "include_protein" | "exclude_pseudogene";
+export type GeneProductTypeFilter = "all" | "include_protein";
 
 export interface IPieChartSegment {
     aspect: Aspect,
@@ -23,7 +23,7 @@ export type IPieChartData = {
 
 export const withPieChartData = (
     strategy: QueryStrategy = 'union',
-    filter: GeneProductTypeFilter = "exclude_pseudogene",
+    filter: GeneProductTypeFilter = "all",
 ): {loading?: boolean, error?: any, data?: IPieChartData} => {
     const _queryParams = new URLSearchParams({ strategy, filter });
 
@@ -86,7 +86,7 @@ const backend_host = process.env.REACT_APP_API_HOSTNAME || '';
 export const withGenes = (
     segments: IPieChartSegment[] = [],
     strategy: QueryStrategy = 'union',
-    filter: GeneProductTypeFilter = "exclude_pseudogene",
+    filter: GeneProductTypeFilter = "all",
 ): {loading?: boolean, error?: any, genesMeta?: string, annotationsMeta?: string, geneCount?: number, annotationCount?: number, triggerGeneDownload?: () => void, triggerAnnotationDownload?: () => void} => {
     const _queryParams = new URLSearchParams({ strategy, filter, format: "json" });
 
