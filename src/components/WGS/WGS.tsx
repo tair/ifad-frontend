@@ -1,31 +1,14 @@
 import React from "react";
-import { AppBar, Toolbar, Typography, makeStyles, Theme, Tabs, Tab, IconButton, Tooltip } from "@material-ui/core";
+import { AppBar, Toolbar, Typography, makeStyles, Theme, Button, Tooltip } from "@material-ui/core";
 import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab";
 import { withPieChartData, AnnotationCategory, IPieChartSegment, QueryStrategy, GeneProductTypeFilter } from "./store";
 import { AspectPie } from "./pie";
-import { useLocation, useHistory, Link } from "react-router-dom";
-import { __RouterContext as RouteContext, useRouteMatch, Redirect } from "react-router";
+import { useLocation, useHistory } from "react-router-dom";
 import { Genes } from "./Genes";
 import { Annotations } from "./Annotations";
 import { grey } from "@material-ui/core/colors";
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 
-const TabPanel = (props: { children: JSX.Element | JSX.Element[], index: any, value: any }) => {
-    const { children, value, index, ...other } = props;
-
-    return (
-        <Typography
-            component="div"
-            role="tabpanel"
-            hidden={value !== index}
-            id={`simple-tabpanel-${index}`}
-            aria-labelledby={`simple-tab-${index}`}
-            {...other}
-        >
-            {children}
-        </Typography>
-    );
-}
 
 
 const withStyles = makeStyles((theme: Theme) => ({
@@ -36,7 +19,8 @@ const withStyles = makeStyles((theme: Theme) => ({
         marginTop: theme.spacing(2)
     },
     mainContainer: {
-        flexGrow: 10
+        flexGrow: 10,
+        display: "flex"
     },
     container: {
         display: "flex",
@@ -120,9 +104,7 @@ export const WGS = () => {
         history.push({ search: `?${query}` })
     }
 
-    const match_path = React.useContext(RouteContext).match.path;
 
-    const sub_match = useRouteMatch<{ route: string }>(`${match_path}/:route`);
 
     // const filter = filters.map(f => `${f.aspect},${f.category}`).join("&");
     return (
@@ -138,13 +120,13 @@ export const WGS = () => {
                     Explore the state of annotation of the Arabidopsis thaliana genome based on annotation status using the Gene Ontology (GO) aspects of Molecular Function, Biological Process, and Cellular Component.
                 </div>
                 <div className={styles.chartContainer}>
-                    {error ? <span>{error.toString()}</span> : data ? (
+                    {error ? <span>{error.toString()}</span> : (
                         <>
-                            <AspectPie data={F} label="Molecular Function" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, F: actives }))} activeCategories={selectedCategories.F} />
-                            <AspectPie data={P} label="Biological Process" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, P: actives }))} activeCategories={selectedCategories.P} />
-                            <AspectPie data={C} label="Cellular Component" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, C: actives }))} activeCategories={selectedCategories.C} />
+                            <AspectPie loading={!data} data={F} label="Molecular Function" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, F: actives }))} activeCategories={selectedCategories.F} />
+                            <AspectPie loading={!data} data={P} label="Biological Process" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, P: actives }))} activeCategories={selectedCategories.P} />
+                            <AspectPie loading={!data} data={C} label="Cellular Component" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, C: actives }))} activeCategories={selectedCategories.C} />
                         </>
-                    ) : null}
+                    )}
                 </div>
                 <div style={{
                     display: "inherit",
@@ -152,13 +134,13 @@ export const WGS = () => {
                     marginTop: 12
                 }}>
                     <Tooltip title="Reset filters">
-                        <IconButton onClick={() => { history.push({ search: `?` }) }} ><RotateLeftIcon /></IconButton>
+                        <Button size="large" variant="contained" style={{ marginRight: 12 }} onClick={() => { history.push({ search: `?` }) }} ><RotateLeftIcon /> Reset Fitlers</Button>
                     </Tooltip>
                     <Typography variant="h5">Operator: </Typography>
                     <ToggleButtonGroup
                         value={strategy}
                         exclusive
-                        onChange={(_, v) => {if (v) setOperator(v)}}
+                        onChange={(_, v) => { if (v) setOperator(v) }}
                         size="small"
                         style={{ padding: 16 }}
                     >
@@ -169,7 +151,7 @@ export const WGS = () => {
                     <ToggleButtonGroup
                         value={filter}
                         exclusive
-                        onChange={(_, v) => {if(v) setFilterType(v)}}
+                        onChange={(_, v) => { if (v) setFilterType(v) }}
                         size="small"
                         style={{ padding: 16 }}
                     >
@@ -182,22 +164,12 @@ export const WGS = () => {
                     <ul style={{ marginTop: 0 }}>{segments.map(f => <span>{aspectHR[f.aspect]} - {statusHR[f.category]}</span>).reduce((accum, curr) => [...accum, <li> {curr} {accum.length < segments.length - 1 ? <b> {strategyHR[strategy]} </b> : null} </li>], [])}</ul>
                 </Typography>
                 <div className={styles.mainContainer}>
-                    {
-                        sub_match ? (
-                            <>
-                                <Tabs value={sub_match.params.route}>
-                                    <Tab component={Link} to={{ pathname: "genes", search: '' + query }} value={"genes"} label="Gene IDs" />
-                                    <Tab component={Link} to={{ pathname: "annotations", search: '' + query }} value={"annotations"} label="Annotations" />
-                                </Tabs>
-                                <TabPanel value={"annotations"} index={sub_match.params.route}>
-                                    <Annotations segments={segments} strategy={strategy} filter={filter} />
-                                </TabPanel>
-                                <TabPanel value={"genes"} index={sub_match.params.route}>
-                                    <Genes segments={segments} strategy={strategy} filter={filter} />
-                                </TabPanel>
-                            </>
-                        ) : <Redirect to={`${match_path}/genes`} />
-                    }
+                    <div style={{width: "50%"}}>
+                        <Genes segments={segments} strategy={strategy} filter={filter} />
+                    </div>
+                    <div style={{width: "50%"}}>
+                        <Annotations segments={segments} strategy={strategy} filter={filter} />
+                    </div>
                 </div>
             </div>
         </>
