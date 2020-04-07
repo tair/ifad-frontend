@@ -77,16 +77,16 @@ const strategyHR = {
 }
 
 export const WGS = () => {
-    const {
-        P, F, C
-    } = withPieChartData();
-    const styles = withStyles({});
-
     const query = useQuery();
     const history = useHistory();
+    const styles = withStyles({});
 
+    const filter: GeneProductTypeFilter = React.useMemo<GeneProductTypeFilter>((() => query.get("filter") as GeneProductTypeFilter || 'all'), [query]);
     const strategy = React.useMemo<QueryStrategy>((() => query.get("strategy") as QueryStrategy || 'union'), [query]);
-    const filter: GeneProductTypeFilter = React.useMemo<GeneProductTypeFilter>((() => query.get("filter") as GeneProductTypeFilter || 'exclude_pseudogene'), [query]);
+
+    const { error, data } = withPieChartData(strategy, filter);
+    const { P, F, C } = data || {};
+
     const calculateSelected = () => ({ P: query.getAll("P") as AnnotationCategory[], F: query.getAll("F") as AnnotationCategory[], C: query.getAll("C") as AnnotationCategory[] });
     const selectedCategories = React.useMemo(calculateSelected, [query]);
     const segments: Array<IPieChartSegment> = React.useMemo(
@@ -106,6 +106,7 @@ export const WGS = () => {
             }
         })
         params.set("strategy", strategy);
+        params.set("filter", filter);
         history.push({ search: `?${params}` })
     };
 
@@ -116,7 +117,7 @@ export const WGS = () => {
 
     const setFilterType = (filter: GeneProductTypeFilter) => {
         query.set("filter", filter);
-        history.push({search: `?${query}`})
+        history.push({ search: `?${query}` })
     }
 
     const match_path = React.useContext(RouteContext).match.path;
@@ -124,7 +125,6 @@ export const WGS = () => {
     const sub_match = useRouteMatch<{ route: string }>(`${match_path}/:route`);
 
     // const filter = filters.map(f => `${f.aspect},${f.category}`).join("&");
-
     return (
         <>
             <AppBar color="primary" position="absolute">
@@ -137,19 +137,14 @@ export const WGS = () => {
                 <div className={styles.aboutContainer}>
                     Explore the state of annotation of the Arabidopsis thaliana genome based on annotation status using the Gene Ontology (GO) aspects of Molecular Function, Biological Process, and Cellular Component.
                 </div>
-                {/* <div style={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "flex-end"
-                }}>
-                    <Tooltip title="Reset filters">
-                        <IconButton onClick={() => setSelectedCategories({ F: [], P: [], C: [] })} ><RotateLeftIcon /></IconButton>
-                    </Tooltip>
-                </div> */}
                 <div className={styles.chartContainer}>
-                    <AspectPie data={F} label="Molecular Function" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, F: actives }))} activeCategories={selectedCategories.F} />
-                    <AspectPie data={P} label="Biological Process" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, P: actives }))} activeCategories={selectedCategories.P} />
-                    <AspectPie data={C} label="Cellular Component" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, C: actives }))} activeCategories={selectedCategories.C} />
+                    {error ? <span>{error.toString()}</span> : data ? (
+                        <>
+                            <AspectPie data={F} label="Molecular Function" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, F: actives }))} activeCategories={selectedCategories.F} />
+                            <AspectPie data={P} label="Biological Process" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, P: actives }))} activeCategories={selectedCategories.P} />
+                            <AspectPie data={C} label="Cellular Component" onActiveChange={(actives) => setSelectedCategories(({ ...selectedCategories, C: actives }))} activeCategories={selectedCategories.C} />
+                        </>
+                    ) : null}
                 </div>
                 <div style={{
                     display: "inherit",
@@ -157,13 +152,13 @@ export const WGS = () => {
                     marginTop: 12
                 }}>
                     <Tooltip title="Reset filters">
-                        <IconButton onClick={() => {history.push({search:`?`})}} ><RotateLeftIcon /></IconButton>
+                        <IconButton onClick={() => { history.push({ search: `?` }) }} ><RotateLeftIcon /></IconButton>
                     </Tooltip>
                     <Typography variant="h5">Operator: </Typography>
                     <ToggleButtonGroup
                         value={strategy}
                         exclusive
-                        onChange={(_, v) => setOperator(v)}
+                        onChange={(_, v) => {if (v) setOperator(v)}}
                         size="small"
                         style={{ padding: 16 }}
                     >
@@ -174,13 +169,12 @@ export const WGS = () => {
                     <ToggleButtonGroup
                         value={filter}
                         exclusive
-                        onChange={(_, v) => setFilterType(v)}
+                        onChange={(_, v) => {if(v) setFilterType(v)}}
                         size="small"
                         style={{ padding: 16 }}
                     >
                         <ToggleButton value="all"><Tooltip title="Will return the original query result unchanged."><span>All</span></Tooltip></ToggleButton>
-                        <ToggleButton value="include_protein"><Tooltip title="Will return only genes and annotations whose Gene Product Type is 'protein_coding'"><span>Include Protein</span></Tooltip></ToggleButton>
-                        <ToggleButton value="exclude_pseudogene"><Tooltip title="Will return only genes and annotations whose Gene Product Type is _not_ 'pseudogene'"><span>Exclude Pseudogene</span></Tooltip></ToggleButton>
+                        <ToggleButton value="include_protein"><Tooltip title="Will return only genes and annotations whose Gene Product Type is 'protein_coding'"><span>Only Protein</span></Tooltip></ToggleButton>
                     </ToggleButtonGroup>
 
                 </div>

@@ -5,7 +5,7 @@ import { useDebounce } from 'use-debounce';
 export type Aspect = 'P' | 'F' | 'C';
 export type AnnotationCategory = 'EXP' | 'OTHER' | 'UNKNOWN' | 'UNANNOTATED'
 export type QueryStrategy = 'union' | 'intersection';
-export type GeneProductTypeFilter = "all" | "include_protein" | "exclude_pseudogene";
+export type GeneProductTypeFilter = "all" | "include_protein";
 
 export interface IPieChartSegment {
     aspect: Aspect,
@@ -22,52 +22,56 @@ export type IPieChartData = {
 }
 
 export const withPieChartData = (
-    segments: IPieChartSegment[] = [],
     strategy: QueryStrategy = 'union',
-    filter: GeneProductTypeFilter = "exclude_pseudogene",
-): IPieChartData => {
-    const [data, setData] = React.useState<IPieChartData>({P:[],F:[],C:[]});
-    const queryParams = new URLSearchParams({ filter });
+    filter: GeneProductTypeFilter = "all",
+): {loading?: boolean, error?: any, data?: IPieChartData} => {
+    const _queryParams = new URLSearchParams({ strategy, filter });
+
+    const [data, setData] = React.useState<IPieChartData>();
     
+    const [queryParams] = useDebounce(_queryParams.toString(), 250, {leading: true});
+
+    const { fetching: loading, error, data: responseData } = useFetch({url:`${backend_host}/api/v1/wgs_segments?${queryParams}`}, [queryParams]);
+
     React.useEffect(() => {
-        (async () => {
-            const result = await fetch(`${backend_host}/api/v1/wgs_segments?${queryParams}`);
-            const jsonified = await result.json();
+        if(!responseData){
+            return;
+        }
 
-            console.log(jsonified);
+        const newData = Object
+            .entries(responseData)
+            .filter(([key]) => ["P","F","C"].includes(key))
+            .reduce((accum, [aspect, info]: [string, any]) => (
+                {
+                    ...accum, 
+                    [aspect]: [
+                        {
+                            name: "EXP",
+                            value: info.known.exp,
+                        },
+                        {
+                            name: "OTHER",
+                            value: info.known.other,
+                        },
+                        {
+                            name: "UNKNOWN",
+                            value: info.unknown,
+                        },
+                        {
+                            name: "UNANNOTATED",
+                            value: info.unannotated
+                        }
+                    ]
+                }
+            ), {} as IPieChartData)
+        setData(newData);
+    }, [responseData])
 
-            const newData = Object
-                .entries(jsonified)
-                .filter(([key]) => ["P","F","C"].includes(key))
-                .reduce((accum, [aspect, info]: [string, any]) => (
-                    {
-                        ...accum, 
-                        [aspect]: [
-                            {
-                                name: "EXP",
-                                value: info.known.exp,
-                            },
-                            {
-                                name: "OTHER",
-                                value: info.known.other,
-                            },
-                            {
-                                name: "UNKNOWN",
-                                value: info.unknown,
-                            },
-                            {
-                                name: "UNANNOTATED",
-                                value: info.unannotated
-                            }
-                        ]
-                    }
-                ), {} as IPieChartData);
-
-            setData(newData);
-        })();
-    }, []);
-
-    return data;
+    return {
+        loading, 
+        error,
+        data
+    }
 }
 
 export interface IMetadata {
@@ -82,7 +86,7 @@ const backend_host = process.env.REACT_APP_API_HOSTNAME || '';
 export const withGenes = (
     segments: IPieChartSegment[] = [],
     strategy: QueryStrategy = 'union',
-    filter: GeneProductTypeFilter = "exclude_pseudogene",
+    filter: GeneProductTypeFilter = "all",
 ): {loading?: boolean, error?: any, genesMeta?: string, annotationsMeta?: string, geneCount?: number, annotationCount?: number, triggerGeneDownload?: () => void, triggerAnnotationDownload?: () => void} => {
     const _queryParams = new URLSearchParams({ strategy, filter, format: "json" });
 
