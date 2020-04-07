@@ -84,7 +84,7 @@ export const WGS = () => {
     const filter: GeneProductTypeFilter = React.useMemo<GeneProductTypeFilter>((() => query.get("filter") as GeneProductTypeFilter || 'all'), [query]);
     const strategy = React.useMemo<QueryStrategy>((() => query.get("strategy") as QueryStrategy || 'union'), [query]);
 
-    const { loading, error, data } = withPieChartData(strategy, filter);
+    const { error, data } = withPieChartData(strategy, filter);
     const { P, F, C } = data || {};
 
     const calculateSelected = () => ({ P: query.getAll("P") as AnnotationCategory[], F: query.getAll("F") as AnnotationCategory[], C: query.getAll("C") as AnnotationCategory[] });
@@ -106,6 +106,7 @@ export const WGS = () => {
             }
         })
         params.set("strategy", strategy);
+        params.set("filter", filter);
         history.push({ search: `?${params}` })
     };
 
