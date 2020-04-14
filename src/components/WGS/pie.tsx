@@ -5,6 +5,7 @@ import React from "react";
 import { ResponsiveContainer, PieChart, Pie, Cell, Legend, PieLabelRenderProps, Sector } from "recharts";
 import { COLORS } from "../../utils/theme";
 import { Skeleton } from "@material-ui/lab";
+import { statusHR } from "./WGS";
 
 const withStyles = makeStyles((theme: Theme) => ({
     header: {
@@ -87,7 +88,7 @@ export const AspectPie = ({ data, loading, label, onActiveChange, activeCategori
     };
 
     const legendFormatter = (value: AnnotationCategory) => {
-        return <span style={{userSelect:"none", fontWeight: activeCategories.indexOf(value)>=0 ? "bolder" : "normal"}}>{value}</span>
+        return <span style={{userSelect:"none", fontWeight: activeCategories.indexOf(value)>=0 ? "bolder" : "normal"}}>{statusHR[value]}</span>
     }
 
     return (
