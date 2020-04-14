@@ -48,7 +48,7 @@ const aspectHR = {
     'C': "Celluar Component"
 };
 
-const statusHR = {
+export const statusHR = {
     'EXP': "Experimentally Known",
     'OTHER': "Known Other",
     'UNKNOWN': "Annotated Unknown",
@@ -118,6 +118,8 @@ export const WGS = () => {
             <div className={styles.container}>
                 <div className={styles.aboutContainer}>
                     Explore the state of annotation of the Arabidopsis thaliana genome based on annotation status using the Gene Ontology (GO) aspects of Molecular Function, Biological Process, and Cellular Component.
+                    <br/>
+                    <b>Click a pie slice to get started!</b>
                 </div>
                 <div className={styles.chartContainer}>
                     {error ? <span>{error.toString()}</span> : (
@@ -134,9 +136,9 @@ export const WGS = () => {
                     marginTop: 12
                 }}>
                     <Tooltip title="Reset filters">
-                        <Button size="large" variant="contained" style={{ marginRight: 12 }} onClick={() => { history.push({ search: `?` }) }} ><RotateLeftIcon /> Reset Fitlers</Button>
+                        <Button size="large" variant="contained" style={{ marginRight: 12 }} onClick={() => { history.push({ search: `?` }) }} ><RotateLeftIcon />Reset Filters</Button>
                     </Tooltip>
-                    <Typography variant="h5">Operator: </Typography>
+                    <Typography variant="h5">Join On: </Typography>
                     <ToggleButtonGroup
                         value={strategy}
                         exclusive
@@ -147,7 +149,7 @@ export const WGS = () => {
                         <ToggleButton value="union"><Tooltip title="Filter for data that matches EVERY filter"><span>Or</span></Tooltip></ToggleButton>
                         <ToggleButton value="intersection"><Tooltip title="Filter for data that matches ANY filter"><span>And</span></Tooltip></ToggleButton>
                     </ToggleButtonGroup>
-                    <Typography variant="h5">Filter Type: </Typography>
+                    <Typography variant="h5">Gene Product Type: </Typography>
                     <ToggleButtonGroup
                         value={filter}
                         exclusive
