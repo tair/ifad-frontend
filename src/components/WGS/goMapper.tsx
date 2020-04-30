@@ -145,7 +145,7 @@ export const goMapper = () => {
                     <h2> Basic Inputs</h2>
                     <div style={{padding:10, display:"flex" ,flexDirection: "column"}} >
                         <TextareaAutosize style={{width: "60%" ,height: "70%" }} aria-label="minimum height" rowsMin={8} />
-                        <br> </br>
+                        <br/>
                         OR
                         <div className={styles.button} style={{marginTop: "2%"}}>
                             <Button
