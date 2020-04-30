@@ -1,14 +1,14 @@
 import React from "react";
-import { AppBar, Toolbar, Typography, makeStyles, Theme, Button, Tooltip } from "@material-ui/core";
+import { Toolbar, Typography, makeStyles, Theme, Button, Tooltip } from "@material-ui/core";
 import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab";
 import { withPieChartData, AnnotationCategory, IPieChartSegment, QueryStrategy, GeneProductTypeFilter } from "./store";
 import { AspectPie } from "./pie";
 import { useLocation, useHistory } from "react-router-dom";
 import { Genes } from "./Genes";
+import { Nav } from "../Nav/Navbar"
 import { Annotations } from "./Annotations";
 import { grey } from "@material-ui/core/colors";
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
-
 
 
 const withStyles = makeStyles((theme: Theme) => ({
@@ -35,7 +35,13 @@ const withStyles = makeStyles((theme: Theme) => ({
         paddingBottom: theme.spacing(6),
         marginBottom: theme.spacing(3),
         borderBottom: `2px solid ${grey[500]}`
-    }
+    },
+    v1: {
+        borderLeft: "2px solid gray",
+        height: "inherit",
+        marginLeft: "2%",
+        marginRight: "2%",
+    },
 }))
 
 function useQuery() {
@@ -109,11 +115,7 @@ export const WGS = () => {
     // const filter = filters.map(f => `${f.aspect},${f.category}`).join("&");
     return (
         <>
-            <AppBar color="primary" position="absolute">
-                <Toolbar>
-                    <Typography>Whole Genome Snapshot</Typography>
-                </Toolbar>
-            </AppBar>
+            <Nav />
             <Toolbar />
             <div className={styles.container}>
                 <div className={styles.aboutContainer}>
