@@ -1,11 +1,9 @@
 import React from "react";
-import { AppBar, CircularProgress, Toolbar, Typography, makeStyles, Theme, Button, Tooltip } from "@material-ui/core";
+import { Toolbar, Typography, makeStyles, Theme, Button} from "@material-ui/core";
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-import { Genes } from "./Genes";
 import { Nav } from "../Nav/Navbar"
-import { Annotations } from "./Annotations";
 import { grey } from "@material-ui/core/colors";
-import Radio, { RadioProps } from '@material-ui/core/Radio';
+import Radio from '@material-ui/core/Radio';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
@@ -93,7 +91,7 @@ const withStyles = makeStyles((theme: Theme) => ({
             color: "black",
         }
     }
-}))
+}));
 
 
 
@@ -102,11 +100,7 @@ export const goMapper = () => {
     const styles = withStyles({});
 
     const [chart, setChart] = React.useState('');
-    const [count, setCount] = React.useState('');
-
-    const handleCountChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        setCount(event.target.value as string);
-    };
+    
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         setChart(event.target.value as string);
     };
@@ -151,7 +145,7 @@ export const goMapper = () => {
                     <h2> Basic Inputs</h2>
                     <div style={{padding:10, display:"flex" ,flexDirection: "column"}} >
                         <TextareaAutosize style={{width: "60%" ,height: "70%" }} aria-label="minimum height" rowsMin={8} />
-                        <br></br>
+                        <br> </br>
                         OR
                         <div className={styles.button} style={{marginTop: "2%"}}>
                             <Button
@@ -411,4 +405,4 @@ export const goMapper = () => {
         </div>
         </>
     )
-}
+};

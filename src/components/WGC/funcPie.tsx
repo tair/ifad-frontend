@@ -1,11 +1,9 @@
 import React from "react";
-import { Toolbar, Typography, makeStyles, Theme, Button } from "@material-ui/core";
+import { Toolbar, makeStyles, Theme} from "@material-ui/core";
 import { Nav } from "../Nav/Navbar"
-import { Annotations } from "../WGS/Annotations";
 import { grey } from "@material-ui/core/colors";
-import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import {
-    PieChart, Pie, Legend, Tooltip, ScatterChart, Scatter, XAxis, YAxis, ZAxis,
+    PieChart, Pie, Tooltip, 
 } from 'recharts';
 
 
@@ -40,9 +38,7 @@ const withStyles = makeStyles((theme: Theme) => ({
         marginLeft: "2%",
         marginRight: "2%",
     },
-}))
-
-
+}));
 
 
 export const funcPie = () => {
@@ -111,5 +107,5 @@ export const funcPie = () => {
             </div>
             </>
         )
-    }
+    };
 

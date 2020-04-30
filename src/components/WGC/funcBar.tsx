@@ -1,10 +1,8 @@
 import React from "react";
-import { Toolbar, Typography, makeStyles, Theme, Button } from "@material-ui/core";
+import { Toolbar, makeStyles, Theme} from "@material-ui/core";
 import { Nav } from "../Nav/Navbar"
-import { Annotations } from "../WGS/Annotations";
 import { grey } from "@material-ui/core/colors";
-import {
-    PieChart, Pie, BarChart, Bar, CartesianGrid, Cell, Legend, Tooltip, ScatterChart, Scatter, XAxis, YAxis, ZAxis,
+import { BarChart, Bar, CartesianGrid, Cell,  XAxis, YAxis,
 } from 'recharts';
 import { scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
@@ -45,7 +43,7 @@ const withStyles = makeStyles((theme: Theme) => ({
         marginLeft: "2%",
         marginRight: "2%",
     },
-}))
+}));
 
 
 
@@ -176,4 +174,4 @@ export const funcBar = () => {
         </div>
         </>
     )
-}
+};

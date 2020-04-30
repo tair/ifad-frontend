@@ -1,11 +1,8 @@
 import React from "react";
-import { AppBar, CircularProgress, Toolbar, Typography, makeStyles, Theme, Button, Tooltip } from "@material-ui/core";
+import { Toolbar, Typography, makeStyles, Theme, Button} from "@material-ui/core";
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-import { Genes } from "../WGS/Genes";
 import { Nav } from "../Nav/Navbar"
-import { Annotations } from "../WGS/Annotations";
 import { grey } from "@material-ui/core/colors";
-import { Link } from 'react-router-dom';
 import Radio from '@material-ui/core/Radio';
 
 
@@ -78,47 +75,12 @@ const withStyles = makeStyles((theme: Theme) => ({
             color: "black",
         }
     }
-}))
-
-function createData(keyCat: string, funCat: string, anCnt: number, gCnt: number) {
-    return { keyCat, funCat, anCnt, gCnt };
-}
-
-const rows = [
-    createData('GO Cellular Component', "nucleus", 6.0, 24 ),
-    createData('GO Cellular Component', "plasma", 9.0, 37),
-    createData('GO Cellular Component', "cytosol", 16.0, 24),
-    createData('GO Cellular Component', "cytoplasm lol", 3.7, 67),
-    createData('GO Cellular Component', "nucleus", 6.0, 24 ),
-    createData('GO Cellular Component', "plasma", 9.0, 37),
-    createData('GO Cellular Component', "cytosol", 16.0, 24),
-    createData('GO Cellular Component', "cytoplasm lol", 3.7, 67),
-    createData('GO Cellular Component', "nucleus", 6.0, 24 ),
-    createData('GO Cellular Component', "plasma", 9.0, 37),
-    createData('GO Cellular Component', "cytosol", 16.0, 24),
-    createData('GO Cellular Component', "cytoplasm lol", 3.7, 67), createData('GO Cellular Component', "nucleus", 6.0, 24 ),
-    createData('GO Cellular Component', "plasma", 9.0, 37),
-    createData('GO Cellular Component', "cytosol", 16.0, 24),
-    createData('GO Cellular Component', "cytoplasm lol", 3.7, 67), createData('GO Cellular Component', "nucleus", 6.0, 24 ),
-    createData('GO Cellular Component', "plasma", 9.0, 37),
-    createData('GO Cellular Component', "cytosol", 16.0, 24),
-    createData('GO Cellular Component', "cytoplasm lol", 3.7, 67),
-];
-
+}));
 
 export const custom = () => {
 
     const styles = withStyles({});
-
-    const [chart, setChart] = React.useState('');
-    const [count, setCount] = React.useState('');
-
-    const handleCountChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        setCount(event.target.value as string);
-    };
-    const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        setChart(event.target.value as string);
-    };
+    
 
     const [selectedOutput, setSelectedValue] = React.useState('HTML');
 
@@ -225,4 +187,5 @@ export const custom = () => {
         </div>
         </>
     )
-}
+};
+

@@ -84,7 +84,7 @@ const withStyles = makeStyles((theme: Theme) => ({
             color: "black",
         }
     }
-}))
+}));
 
 function createData(keyCat: string, funCat: string, anCnt: number, gCnt: number) {
     return { keyCat, funCat, anCnt, gCnt };
@@ -118,7 +118,6 @@ export const WGC = () => {
     
     const [chart, setChart] = React.useState('');
     const [count, setCount] = React.useState('');
-    const drawVal = '';
     
     const handleCountChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         setCount(event.target.value as string);
@@ -128,13 +127,13 @@ export const WGC = () => {
     };
     const history = useHistory();
     const draw = () => {
-        if(chart == "pie") {
+        if(chart === "pie") {
             history.push("/pie")
         }
         else{
             history.push("/bar") 
         }
-    }
+    };
     
 
     return (
@@ -234,4 +233,4 @@ export const WGC = () => {
         
         </>
     )
-}
+};
